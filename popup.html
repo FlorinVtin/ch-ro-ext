@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Web Scraper</title>
+    <style>
+      body {
+        width: 300px;
+        font-family: Arial, sans-serif;
+        padding: 10px;
+      }
+      #headings {
+        margin-top: 10px;
+      }
+      #headings ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      #headings li {
+        margin: 5px 0;
+        padding: 3px;
+        border-bottom: 1px solid #ddd;
+      }
+      h4 {
+        margin-top: 20px;
+        font-size: 16px;
+        color: #333;
+      }
+      p {
+        font-size: 14px;
+        color: #666;
+      }
+
+      #inputForm {
+        margin-top: 20px;
+        width: 200px;
+      }
+      input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+
+      
+    </style>
+  </head>
+  <body>
+    <!-- Formular pentru variabilele de tip float -->
+    <div id="inputForm">
+      <h4>Introduceti comisioanele</h4>
+      <label for="var1">Comision agent:</label>
+      <input type="number" id="var1" step="any" placeholder="Numar procentual %" required>
+      
+
+      <label for="var9">Cost transport aer:</label>
+      <input type="number" id="var9" step="any" placeholder="Pret in dolari per kg" required>
+
+      <label for="var10">Cost tren/mare:</label>
+      <input type="number" id="var10" step="any" placeholder="Pret in dolari per kg" required>
+
+      <label for="var2">Cost transport fabrica-agent:</label>
+      <input type="number" id="var2" step="any" placeholder="Numar procentual %" required>
+
+      <label for="var3">TVA:</label>
+      <input type="number" id="var3" step="any" placeholder="Numar procentual %" required>
+
+      <label for="var4">Taxe Vamale:</label>
+      <input type="number" id="var4" step="any" placeholder="Numar procentual %" required>
+
+      <label for="var5">Impozit profit:</label>
+      <input type="number" id="var5" step="any" placeholder="Numar procentual %" required>
+
+      <label for="var6">Consumabile impachetare produs profit, cu TVA:</label>
+      <input type="number" id="var6" step="any" placeholder="Suma in Lei" required>
+
+      <label for="var7">Cost curier transport cu contract, cu TVA:</label>
+      <input type="number" id="var7" step="any" placeholder="Suma in Lei" required>
+
+
+      <label for="var8">Cost curierat facturat catre client, cu TVA:</label>
+      <input type="number" id="var8" step="any" placeholder="Suma in Lei" required>
+      
+      
+      <button id="saveButton">Salveaza comisioanele</button>
+      <script src="comission.js" type="module"></script>
+
+    </div>
+
+    <!-- Secțiunea pentru rezultate -->
+    <div id="headings"></div>
+
+    <!-- --------------------------------------- -->
+    <h3>Scrape Prices, Packaging & Exchange Rates</h3>
+    <button id="scrapeButton">Scrape Details</button>
+    <div id="headings"></div>
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>
