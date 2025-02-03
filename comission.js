@@ -9,6 +9,7 @@ const var7Input = document.getElementById("var7");
 const var8Input = document.getElementById("var8");
 const var9Input = document.getElementById("var9");
 const var10Input = document.getElementById("var10");
+const var11Input = document.getElementById("var11");
 const saveButton = document.getElementById("saveButton");
 
 // Încarcă valorile salvate din Local Storage (dacă există)
@@ -23,6 +24,7 @@ window.onload = () => {
     const savedVar8 = localStorage.getItem("var8");
     const savedVar9 = localStorage.getItem("var9");
     const savedVar10 = localStorage.getItem("var10");
+    const savedVar11 = localStorage.getItem("var11");
 
     // Dacă există valori salvate, le setăm în câmpurile de input
     if (savedVar1 !== null) {
@@ -57,6 +59,9 @@ window.onload = () => {
     if (savedVar10 !== null) {
         var10Input.value = savedVar10;
     }
+    if (savedVar11 !== null) {
+        var11Input.value = savedVar11;
+    }
 
 };
 
@@ -72,6 +77,7 @@ saveButton.addEventListener("click", () => {
     const var8 = parseFloat(var8Input.value);
     const var9 = parseFloat(var9Input.value);
     const var10 = parseFloat(var10Input.value);
+    const var11 = parseFloat(var11Input.value);
 
     // Verifică dacă valorile sunt valide
     if (isNaN(var1) || isNaN(var2)) {
@@ -88,12 +94,13 @@ saveButton.addEventListener("click", () => {
         localStorage.setItem("var8", var8);
         localStorage.setItem("var9", var9);
         localStorage.setItem("var10", var10);
+        localStorage.setItem("var11", var11);
 
         // Afișează mesaj de confirmare
         alert(`Comisioanele au fost salvate`);
     }
     console.log('salvare')
-    return {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10};
+    return {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11};
 });
 
 
@@ -109,7 +116,8 @@ export function loadVariables() {
     const var8 = parseFloat(localStorage.getItem("var8"));
     const var9 = parseFloat(localStorage.getItem("var9"));
     const var10 = parseFloat(localStorage.getItem("var10"));
-    return {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10};
+    const var11 = parseFloat(localStorage.getItem("var11"));
+    return {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11};
 
 }
 
