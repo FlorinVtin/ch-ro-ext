@@ -80,7 +80,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       // Display the volumetric weight if available
       const transportCostDiv = document.createElement('div');
       const transportCostTitle = document.createElement('h4');
-      transportCostTitle.textContent = 'Marime si greutate per pachet';
+      transportCostTitle.textContent = 'Marime si greutate per buc.';
       transportCostDiv.appendChild(transportCostTitle);
 
       // show calculation for volumetric weigth 
@@ -88,11 +88,11 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       volumetricValue.innerHTML = `<strong>Calcul volumetric:</strong> ${response.volumetricCalc} kg`;
       
       const packSize = document.createElement('p');
-      packSize.innerHTML = `<strong>Dimensiuni per colet: </strong> ${response.packagingDetails.singlePackageSize}`;
+      packSize.innerHTML = `<strong>Dimensiuni per buc.: </strong> ${response.packagingDetails.singlePackageSize}`;
       // show gross weight
       const grossWeight = response.grossWeight;
       const gWeight = document.createElement('p');
-      gWeight.innerHTML = `<strong>Greutate per colet:</strong> ${grossWeight} kg`;
+      gWeight.innerHTML = `<strong>Greutate per buc.:</strong> ${grossWeight} kg`;
 
       // show the weigth for cost calculation
       const transport = document.createElement('p')
@@ -112,7 +112,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
 
       const finalCostsDiv = document.createElement('div');
       const finalCostsTitle = document.createElement('h4');
-      finalCostsTitle.textContent = 'Costuri achizitie adaugand toate comisioanele + transport'
+      finalCostsTitle.textContent = 'Cost final import'
       finalCostsDiv.appendChild(finalCostsTitle)
 
       // adding the final cost 
