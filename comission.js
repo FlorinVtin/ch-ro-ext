@@ -66,43 +66,45 @@ window.onload = () => {
 };
 
 // Salvează valorile în Local Storage când utilizatorul apasă butonul
-saveButton.addEventListener("click", () => {
-    const var1 = parseFloat(var1Input.value);
-    const var2 = parseFloat(var2Input.value);
-    const var3 = parseFloat(var3Input.value);
-    const var4 = parseFloat(var4Input.value);
-    const var5 = parseFloat(var5Input.value);
-    const var6 = parseFloat(var6Input.value);
-    const var7 = parseFloat(var7Input.value);
-    const var8 = parseFloat(var8Input.value);
-    const var9 = parseFloat(var9Input.value);
-    const var10 = parseFloat(var10Input.value);
-    const var11 = parseFloat(var11Input.value);
 
-    // Verifică dacă valorile sunt valide
-    if (isNaN(var1) || isNaN(var2)) {
-        alert("Te rog să introduci valori numerice valide.");
-    } else {
-        // Salvează valorile în Local Storage
-        localStorage.setItem("var1", var1);
-        localStorage.setItem("var2", var2);
-        localStorage.setItem("var3", var3);
-        localStorage.setItem("var4", var4);
-        localStorage.setItem("var5", var5);
-        localStorage.setItem("var6", var6);
-        localStorage.setItem("var7", var7);
-        localStorage.setItem("var8", var8);
-        localStorage.setItem("var9", var9);
-        localStorage.setItem("var10", var10);
-        localStorage.setItem("var11", var11);
-
-        // Afișează mesaj de confirmare
-        alert(`Comisioanele au fost salvate`);
-    }
-    console.log('salvare')
-    return {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11};
-});
-
+export function saveComissions(){
+    saveButton.addEventListener("click", () => {
+        const var1 = parseFloat(var1Input.value);
+        const var2 = parseFloat(var2Input.value);
+        const var3 = parseFloat(var3Input.value);
+        const var4 = parseFloat(var4Input.value);
+        const var5 = parseFloat(var5Input.value);
+        const var6 = parseFloat(var6Input.value);
+        const var7 = parseFloat(var7Input.value);
+        const var8 = parseFloat(var8Input.value);
+        const var9 = parseFloat(var9Input.value);
+        const var10 = parseFloat(var10Input.value);
+        const var11 = parseFloat(var11Input.value);
+    
+        // Verifică dacă valorile sunt valide
+        if (isNaN(var1) || isNaN(var2)) {
+            alert("Te rog să introduci valori numerice valide.");
+        } else {
+            // Salvează valorile în Local Storage
+            localStorage.setItem("var1", var1);
+            localStorage.setItem("var2", var2);
+            localStorage.setItem("var3", var3);
+            localStorage.setItem("var4", var4);
+            localStorage.setItem("var5", var5);
+            localStorage.setItem("var6", var6);
+            localStorage.setItem("var7", var7);
+            localStorage.setItem("var8", var8);
+            localStorage.setItem("var9", var9);
+            localStorage.setItem("var10", var10);
+            localStorage.setItem("var11", var11);
+    
+            // Afișează mesaj de confirmare
+            alert(`Comisioanele au fost salvate`);
+        }
+        loadVariables()
+        return {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11};
+    });
+}
 
 // Funcție pentru a încărca valorile din Local Storage
 export function loadVariables() {
@@ -120,6 +122,8 @@ export function loadVariables() {
     return {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11};
 
 }
+
+saveComissions()
 
 // Exportă funcția de încărcare a variabilelor
 // export { loadVariables };

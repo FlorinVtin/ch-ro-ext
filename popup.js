@@ -1,27 +1,49 @@
 import { loadVariables }  from './comission.js';
+// import { saveComissions } from './comission.js';
 
-const {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11} = loadVariables();
-
-
-const cAgent            = var1;
-const costTrspAer       = var2;
-const costTrspTren      = var3;
-const costTrspFabAgent  = var4;
-const tva               = var5;
-const taxeVamale        = var6;
-const impozitProfit     = var7;
-const consImpProd       = var8;
-const costTrspContr     = var9;
-const costTrspFacClient = var10;
-const cmsEmag =           var11;
+let cAgent            = undefined;
+let costTrspAer       = undefined;
+let costTrspTren      = undefined;
+let costTrspFabAgent  = undefined;
+let tva               = undefined;
+let taxeVamale        = undefined;
+let impozitProfit     = undefined;
+let consImpProd       = undefined;
+let costTrspContr     = undefined;
+let costTrspFacClient = undefined;
+let cmsEmag =           undefined;
 
 let transportWeight = undefined;
+let firstPrice = undefined;
 
-
+function checkComissions(){
+  let {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11} = loadVariables();
+  // cAgent            = parseFloat(var1);
+  cAgent            = parseFloat(document.getElementById('var1').value);
+  // costTrspAer       = parseFloat(var2);
+  costTrspAer       = parseFloat(document.getElementById('var2').value);
+  // costTrspTren      = parseFloat(var3);
+  costTrspTren      = parseFloat(document.getElementById('var3').value);
+  // costTrspFabAgent  = parseFloat(var4);
+  costTrspFabAgent  = parseFloat(document.getElementById('var4').value);
+  // tva               = parseFloat(var5);
+  tva               = parseFloat(document.getElementById('var5').value);
+  // taxeVamale        = parseFloat(var6);
+  taxeVamale        = parseFloat(document.getElementById('var6').value);
+  // impozitProfit     = parseFloat(var7);
+  impozitProfit     = parseFloat(document.getElementById('var7').value);
+  // consImpProd       = parseFloat(var8);
+  consImpProd       = parseFloat(document.getElementById('var8').value);
+  // costTrspContr     = parseFloat(var9);
+  costTrspContr     = parseFloat(document.getElementById('var9').value);
+  // costTrspFacClient = parseFloat(var10);
+  costTrspFacClient = parseFloat(document.getElementById('var10').value);
+  // cmsEmag           = parseFloat(var11);
+  cmsEmag           = parseFloat(document.getElementById('var11').value);
+}
 
 
 document.getElementById('scrapeButton').addEventListener('click', function() {
-
     // Send a message to the background to scrape the price and packaging details
     chrome.runtime.sendMessage({ action: 'scrapePriceAndPackagingDetails' }, function(response) {
       const headingsDiv = document.getElementById('headings');
@@ -104,93 +126,106 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       transportCostDiv.append(gWeight);
       transportCostDiv.append(transport)
 
-   
       const keys = Object.entries(response.priceDetails[0]);
-      const firstPrice = keys[1][1].replace('$', '')
+      firstPrice = keys[1][1].replace('$', '')
+
       // firstPrice = parseInt(firstPrice)
       // const k = Object.entries(keys)
 
       const finalCostsDiv = document.createElement('div');
       const finalCostsTitle = document.createElement('h4');
-      finalCostsTitle.textContent = 'Cost final import'
+      finalCostsTitle.textContent = 'Cost final import per buc.'
       finalCostsDiv.appendChild(finalCostsTitle)
 
       // adding the final cost 
       const showFinalCost_aer = document.createElement('p');
       const showFinalCost_tren = document.createElement('p');
+      
+      // load comissions
+      checkComissions()
+      const {calculComisionAgent, calculTransportFabAg} = costAchizitieChina();
 
-      showFinalCost_aer.innerHTML = `<strong>Cost Transport Aer: <span style="color: #850025;"> ${costFinalAchAer()} $</span></strong>`;
-      // <span style="color: #850025;">word</span> 
-      showFinalCost_tren.innerHTML = `<strong>Cost Transport Tren: <span style="color: #850025;"> ${costFinalAchTren()} $ </span></strong>`;
+      firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
+      console.log(firstPrice)
+
+      // show the total costs
+      let costFinalAch_Aer = costFinalAchAer();
+      let costFinalAch_Tren = costFinalAchTren();
+
+      showFinalCost_aer.innerHTML = `<strong>Cost Transport Aer: <span style="color: #850025;"> ${costFinalAch_Aer} $</span></strong>`;
+      showFinalCost_tren.innerHTML = `<strong>Cost Transport Tren: <span style="color: #850025;"> ${costFinalAch_Tren} $ </span></strong>`;
 
       finalCostsDiv.append(showFinalCost_aer);
       finalCostsDiv.append(showFinalCost_tren);
 
-      
-      headingsDiv.appendChild(transportCostDiv)
-      headingsDiv.appendChild(finalCostsDiv)
-
-
-      function costTransportAer(){
-        // comision transport aer * greutate
-        return costTrspAer * transportWeight
-      }
-
-
-      function costTransportTren(){
-        // comision tranport tren * greutate
-        return costTrspTren * transportWeight
-      }
-
-      function costTaxeVamaleAer(){
-        // (cost achizitie china + cost transport) * taxa vamala
-        const cTrspAer = costTransportAer()
-        return (+firstPrice + cTrspAer) * taxeVamale/100
-      }
-
-      function costTaxeVamaleTren(){
-        // (cost achizitie china + cost transport) * taxa vamala
-        const cTrspTren = costTransportTren()
-        return (+firstPrice + cTrspTren) * taxeVamale/100
-      }
-
-      function calculTVA_aer(){
-        // (pret ach China + cost trans aer + taxe vam) * tva
-        const costTrspAer = costTransportAer();
-        const cTaxVamAer = costTaxeVamaleAer();
-        const calculTVA = 0 + '.' + tva
-
-        return (+firstPrice + costTrspAer + cTaxVamAer) * calculTVA
-      }
-
-      function calculTVA_tren(){
-        // (pret ach China + cost trans aer + taxe vam) * tva
-        const cTrspTren = costTransportTren();
-        const cTaxVamTren = costTaxeVamaleTren();
-        const calculTVA = 0 + '.' + tva
-
-        return (+firstPrice + cTrspTren + cTaxVamTren) * calculTVA
-      }
-
-
-      function costFinalAchAer(){
-        // pret ach China + cost trans aer + taxe vam aer + tva
-        const costTrspAer = costTransportAer();
-        const cTaxVamAer = costTaxeVamaleAer();
-        const calculTVAaer = calculTVA_aer()
-
-        return (+firstPrice + costTrspAer + cTaxVamAer + calculTVAaer).toFixed(2)
-      }
-
-      function costFinalAchTren(){
-        // pret ach China + cost trans aer + taxe vam aer + tva
-        const cTrspTren = costTransportTren();
-        const cTaxVamTren = costTaxeVamaleTren();
-        const calculTVAtren = calculTVA_tren()
-
-        return (+firstPrice + cTrspTren + cTaxVamTren + calculTVAtren).toFixed(2)
-      }
-
+      headingsDiv.appendChild(transportCostDiv);
+      headingsDiv.appendChild(finalCostsDiv);
     });
   });
-  
+
+  function costAchizitieChina(){
+    const calculComisionAgent = (1 + cAgent/100).toFixed(2);
+    const calculTransportFabAg = (1 + costTrspFabAgent/100).toFixed(2);
+    return {calculComisionAgent, calculTransportFabAg}
+  }
+
+
+  function costTransportAer(){
+    // comision transport aer * greutate
+    return costTrspAer * transportWeight
+  }
+
+
+  function costTransportTren(){
+    // comision tranport tren * greutate
+    return costTrspTren * transportWeight
+  }
+
+  function costTaxeVamaleAer(){
+    // (cost achizitie china + cost transport) * taxa vamala
+    const cTrspAer = costTransportAer()
+    return (+firstPrice + cTrspAer) * taxeVamale/100
+  }
+
+  function costTaxeVamaleTren(){
+    // (cost achizitie china + cost transport) * taxa vamala
+    const cTrspTren = costTransportTren()
+    return (+firstPrice + cTrspTren) * taxeVamale/100
+  }
+
+  function calculTVA_aer(){
+    // (pret ach China + cost trans aer + taxe vam) * tva
+    const costTrspAer = costTransportAer();
+    const cTaxVamAer = costTaxeVamaleAer();
+    const calculTVA = 0 + '.' + tva
+
+    return (+firstPrice + costTrspAer + cTaxVamAer) * calculTVA
+  }
+
+  function calculTVA_tren(){
+    // (pret ach China + cost trans aer + taxe vam) * tva
+    const cTrspTren = costTransportTren();
+    const cTaxVamTren = costTaxeVamaleTren();
+    const calculTVA = 0 + '.' + tva
+
+    return (+firstPrice + cTrspTren + cTaxVamTren) * calculTVA
+  }
+
+
+  function costFinalAchAer(){
+    // pret ach China + cost trans aer + taxe vam aer + tva
+    const costTrspAer = costTransportAer();
+    const cTaxVamAer = costTaxeVamaleAer();
+    const calculTVAaer = calculTVA_aer()
+
+    return (+firstPrice + costTrspAer + cTaxVamAer + calculTVAaer).toFixed(2)
+  }
+
+  function costFinalAchTren(){
+    // pret ach China + cost trans aer + taxe vam aer + tva
+    const cTrspTren = costTransportTren();
+    const cTaxVamTren = costTaxeVamaleTren();
+    const calculTVAtren = calculTVA_tren()
+
+    return (+firstPrice + cTrspTren + cTaxVamTren + calculTVAtren).toFixed(2)
+  }

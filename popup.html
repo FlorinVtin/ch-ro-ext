@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Web Scraper</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Import China-Ro</title>
     <style>
       body {
         width: 300px;
@@ -33,7 +34,10 @@
       #inputForm {
         margin-top: 20px;
         width: 200px;
+        display: none;
+        
       }
+      
       input[type="number"] {
         width: 100%;
         padding: 8px;
@@ -54,8 +58,19 @@
         background-color: #45a049;
       }
 
+      .arrow {
+        cursor: pointer;
+        transition: transform 0.3s;
+      }
+
+      .rotate {
+        transform: rotate(180deg);
+      }
       
     </style>
+
+  
+  
   </head>
   <body>
     <!-- Secțiunea pentru rezultate -->
@@ -66,9 +81,15 @@
     <button id="scrapeButton">Calculeaza pret achizitie China</button>
     <div id="headings"></div>
     <script src="popup.js" type="module"></script>
+
+
     <!-- Formular pentru variabilele de tip float -->
+    
+    <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow"></i></span></h3>
+
+
     <div id="inputForm">
-      <h4>Introduceti comisioanele</h4>
+
       <label for="var1">Comision agent %:</label>
       <input type="number" id="var1" step="any" placeholder="Numar procentual %" required>
       
@@ -107,9 +128,10 @@
       
       <button id="saveButton">Salveaza comisioanele</button>
       <script src="comission.js" type="module"></script>
+      <script src="toggle.js"></script>
+
 
     </div>
-
 
   </body>
 </html>
