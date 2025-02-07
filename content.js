@@ -3,7 +3,8 @@ function scrapePriceAndPackagingDetails() {
     let data = {
       priceDetails: [],
       packagingDetails: {},
-      volumetricCalc: ''
+      volumetricCalc: '',
+      grossWeight: ''
     };
   
     // Scrape pricing details as before
@@ -31,7 +32,7 @@ function scrapePriceAndPackagingDetails() {
         // Based on the text in the left div, we can store this information accordingly
         if (leftElement.innerText.includes('Single package size:')) {
           data.packagingDetails.singlePackageSize = rightText;
-        } else if (leftElement.innerText.includes('Gross weight:')) {
+        } else if (leftElement.innerText.includes('gross weight:')) {
           data.packagingDetails.grossWeight = rightText;
         } else if (leftElement.innerText.includes('Net weight:')) {
           data.packagingDetails.netWeight = rightText;
@@ -41,14 +42,23 @@ function scrapePriceAndPackagingDetails() {
           data.packagingDetails.deliveryTime = rightText;
         }
         
+        // calculate the volumetric weigth based on single package size
         if(data.packagingDetails.singlePackageSize){
             let transportCalc = data.packagingDetails.singlePackageSize;
             transportCalc = transportCalc.replace(" cm", "");
             transportCalc = transportCalc.replace(/X/g, "*");
             transportCalc += "/5000";
             // console.log('math', eval(transportCalc))
-            let volumetricSize = roundTransportNumber(eval(transportCalc));
+            // let volumetricSize = roundTransportNumber(eval(transportCalc));
+            let volumetricSize = eval(transportCalc).toFixed(3);
             data.volumetricCalc = volumetricSize;
+        }
+
+        // calculate the weight based on gross weight
+        if (data.packagingDetails.grossWeight){
+          // let grossWeight = data.packagingDetails.grossWeight;
+          let grossWeight = data.packagingDetails.grossWeight.replace('kg', '');
+          data.grossWeight = grossWeight;
         }
 
       }
@@ -74,23 +84,6 @@ function scrapePriceAndPackagingDetails() {
     }
   }
 
-  function formulaCalcul(price, volumKgAer, volumKgTren, volum, cAgent, cTrspChn, tva, taxVamale, impProf, cImpProdus, cCurierContr, cCurierFac){
-    // price $
-    // volum Aer kg = Pret $/kg 
-    // volum Tren kg = Pret $/kg
-    // cAgent %
-    // cTrspChn %
-    // tva %
-    // taxVamale %
-    // impProf %
-    // cImpProdus Lei
-    // cCurierContr Lei
-    // cCurierFac Lei
-    const priceTrsAer = price + (volum * volumKgAer  )
-    return {priceTrsAer, priceTrsTren}
-
-  }
-  
   // Run the function and return the data
   scrapePriceAndPackagingDetails();
   
