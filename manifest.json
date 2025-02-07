@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Calculator CHN-RO",
     "version": "1.0",
-    "description": "Calculator pentru profitabilitate import Chine-Romania.",
+    "description": "Calculator pentru profitabilitate import China-Romania.",
     "icons": {
       "48": "icon.png"
     },
