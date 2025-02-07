@@ -125,11 +125,3 @@ export function loadVariables() {
 
 saveComissions()
 
-// Exportă funcția de încărcare a variabilelor
-// export { loadVariables };
-// // Event pentru butonul de scraping (funcționalitate existentă)
-// document.getElementById("scrapeButton").addEventListener("click", () => {
-//     alert("Scraping initiated..."); // Poti adăuga logica de scraping aici
-
-// });
-

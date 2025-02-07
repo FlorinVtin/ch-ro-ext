@@ -146,7 +146,6 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       const {calculComisionAgent, calculTransportFabAg} = costAchizitieChina();
 
       firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
-      console.log(firstPrice)
 
       // show the total costs
       let costFinalAch_Aer = costFinalAchAer();
@@ -229,3 +228,39 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
 
     return (+firstPrice + cTrspTren + cTaxVamTren + calculTVAtren).toFixed(2)
   }
+
+// document.getElementById('find-product').addEventListener("click", function() {
+//   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+//     const activeTab = tabs[0];
+//     // const tabUrl = activeTab.url;
+
+//     // console.log("Active Tab URL:", tabUrl);
+
+//     // În loc de chrome.scripting.executeScript, folosim chrome.tabs.executeScript în manifest v2
+//     chrome.tabs.executeScript(activeTab.id, {
+//       // code: '(' + findImage.toString() + ')()'  // Se injectează funcția findImage în tab-ul activ
+//       code: `
+//       function bla(){
+//         alert('hello')
+//       }
+//       bla()`
+      
+//     });
+//   });
+// });
+
+document.getElementById('find-product').addEventListener("click", function() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    const activeTab = tabs[0];
+    // const tabUrl = activeTab.url;
+    // console.log("Active Tab URL:", tabUrl);
+
+    // Injectează funcția findImage în tab-ul activ
+    chrome.tabs.executeScript(activeTab.id, {
+      code: 'findImage()'  // Execută funcția findImage în contextul paginii
+    });
+  });
+  
+});
+
+  
