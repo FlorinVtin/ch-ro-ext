@@ -8,17 +8,25 @@ function scrapePriceAndPackagingDetails() {
     };
   
     // Scrape pricing details as before
-    const priceItems = document.querySelectorAll('.price-item');
-    priceItems.forEach(item => {
-      const quality = item.querySelector('.quality')?.innerText.trim();
-      const priceText = item.querySelector('.price span')?.innerText.trim();
-      
-      if (quality && priceText) {
-        const price = parseFloat(priceText.replace('$', '').trim());
-        const modifiedPrice = (price + 1).toFixed(2);  // Just for example, $1 added
-        data.priceDetails.push({ quality, originalPrice: priceText, modifiedPrice: `$${modifiedPrice}` });
+    const priceItems = document.querySelector('.price');
+    let priceText = priceItems.innerText.trim().replace('$', '');
+    if ( priceText ){
+      if (priceText.includes('-')){
+        priceText = priceText.split('-')[0]
       }
-    });
+    }
+    data.priceDetails.push(priceText);
+
+    // priceItems.forEach(item => {
+    //   const quality = item.querySelector('.quality')?.innerText.trim();
+    //   const priceText = item.querySelector('.price span')?.innerText.trim();
+      
+    //   if (quality && priceText) {
+    //     const price = parseFloat(priceText.replace('$', '').trim());
+    //     const modifiedPrice = (price + 1).toFixed(2);  // Just for example, $1 added
+    //     data.priceDetails.push({ quality, originalPrice: priceText, modifiedPrice: `$${modifiedPrice}` });
+    //   }
+    // });
   
     // Scrape the "Packaging and Delivery" information (look for div.left followed by div.right)
     const leftElements = document.querySelectorAll('div.left');

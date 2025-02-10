@@ -83,17 +83,22 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
   
       //   headingsDiv.appendChild(packagingDiv);
       // }
-
+      let calculVolumetric = null
+      if (response.volumetricCalc){
+        calculVolumetric = roundVolumetricSize(response.volumetricCalc)
+      } 
+      console.log(response.volumetricCalc)
       // establishing the weigth value
-      if (response.volumetricCalc && response.grossWeight){
-        if (response.volumetricCalc > response.grossWeight){
-          transportWeight = response.volumetricCalc;
+      if (calculVolumetric && response.grossWeight){
+
+        if (calculVolumetric > response.grossWeight){
+          transportWeight = calculVolumetric;
         } else {
           transportWeight = response.grossWeight;
         }
-      } else if (response.volumetricCalc && !response.grossWeight) {
-        transportWeight = response.volumetricCalc;
-      } else if (!response.volumetricCalc && response.grossWeight){
+      } else if (calculVolumetric && !response.grossWeight) {
+        transportWeight = calculVolumetric;
+      } else if (!calculVolumetric && response.grossWeight){
         transportWeight = response.grossWeight;
       } else {
         transportWeight = 'No data found about size or weigth package!'
@@ -126,8 +131,12 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       transportCostDiv.append(gWeight);
       transportCostDiv.append(transport)
 
-      const keys = Object.entries(response.priceDetails[0]);
-      firstPrice = keys[1][1].replace('$', '')
+      // const keys = Object.entries(response.priceDetails[0]);
+      // firstPrice = keys[1][1].replace('$', '')
+      debugger
+      firstPrice = response.priceDetails[0]
+      console.log(firstPrice)
+
 
       // firstPrice = parseInt(firstPrice)
       // const k = Object.entries(keys)
@@ -161,6 +170,10 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       headingsDiv.appendChild(finalCostsDiv);
     });
   });
+
+  function roundVolumetricSize(volumNumber){
+    return Math.ceil(volumNumber*10)/10
+  }
 
   function costAchizitieChina(){
     const calculComisionAgent = (1 + cAgent/100).toFixed(2);
