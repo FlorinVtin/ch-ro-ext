@@ -37,6 +37,13 @@
         display: none;
         
       }
+
+      #inputPrefferedPrice {
+        margin-top: 20px;
+        width: 200px;
+        display: none;
+        
+      }
       
       input[type="number"] {
         width: 100%;
@@ -76,6 +83,13 @@
     <!-- Secțiunea pentru rezultate -->
     <div id="headings"></div>
 
+
+    <!-- Form for preffered price -->
+    <div id="inputPrefferedPrice">
+      <input type="number" id="userPrice" step="any" placeholder="Introduceti pret achizitie China in $">
+      <script src="popup.js"></script>
+    </div>
+    
     <!-- --------------------------------------- -->
     <!-- <h3>Scrape Prices, Packaging & Exchange Rates</h3> -->
     <button id="scrapeButton">Calculeaza pret achizitie China</button>
@@ -89,7 +103,7 @@
 
     <!-- Formular pentru variabilele de tip float -->
     
-    <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow"></i></span></h3>
+    <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow comission"></i></span></h3>
 
 
     <div id="inputForm">

@@ -48,41 +48,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     chrome.runtime.sendMessage({ action: 'scrapePriceAndPackagingDetails' }, function(response) {
       const headingsDiv = document.getElementById('headings');
       headingsDiv.innerHTML = ''; // Clear previous results
-  
-      // // Display price details if available
-      // if (response && response.priceDetails.length > 0) {
-      //   const priceList = document.createElement('ul');
-  
-      //   // Loop through the price data and display it
-      //   response.priceDetails.forEach(item => {
-      //     const li = document.createElement('li');
-      //     li.innerHTML = `<strong>${item.quality}</strong>: <span style="text-decoration: line-through;">${item.originalPrice}</span> → ${item.modifiedPrice}`;
-      //     priceList.appendChild(li);
-      //   });
-      
-      
-      //   headingsDiv.appendChild(priceList);
-      // } else {
-      //   headingsDiv.innerHTML = 'No price data found.';
-      // }
-  
-      // // Display packaging details if available
-      // if (response.packagingDetails && Object.keys(response.packagingDetails).length > 0) {
-      //   const packagingDiv = document.createElement('div');
-      //   const packagingTitle = document.createElement('h4');
-      //   packagingTitle.textContent = 'Packaging and Delivery Details';
-      //   packagingDiv.appendChild(packagingTitle);
 
-  
-      //   // // Loop through the packaging details and display them
-        // Object.keys(response.packagingDetails).forEach(key => {
-        //   const p = document.createElement('p');
-        //   p.innerHTML = `<strong>${key.replace(/([A-Z])/g, ' $1').trim()}:</strong> ${response.packagingDetails[key]}`;
-        //   packagingDiv.appendChild(p);
-        // });
-  
-      //   headingsDiv.appendChild(packagingDiv);
-      // }
       let calculVolumetric = null
       if (response.volumetricCalc){
         calculVolumetric = roundVolumetricSize(response.volumetricCalc)
@@ -129,18 +95,10 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       transportCostDiv.append(packSize);
       transportCostDiv.append(volumetricValue);
       transportCostDiv.append(gWeight);
-      transportCostDiv.append(transport)
+      transportCostDiv.append(transport);
 
-      // const keys = Object.entries(response.priceDetails[0]);
-      // firstPrice = keys[1][1].replace('$', '')
-      debugger
       firstPrice = response.priceDetails[0]
-      console.log(firstPrice)
-
-
-      // firstPrice = parseInt(firstPrice)
-      // const k = Object.entries(keys)
-
+ 
       const finalCostsDiv = document.createElement('div');
       const finalCostsTitle = document.createElement('h4');
       finalCostsTitle.textContent = 'Cost final import per buc.'
@@ -168,6 +126,51 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
 
       headingsDiv.appendChild(transportCostDiv);
       headingsDiv.appendChild(finalCostsDiv);
+
+      // creating the display for User Custom Price
+      const prefferedPriceDiv = document.createElement('div');
+      const prefferedPriceTitle = document.createElement('h4');
+      prefferedPriceTitle.textContent = 'Pret preferential? ';
+      addArrowToHeading(prefferedPriceTitle);
+      prefferedPriceDiv.appendChild(prefferedPriceTitle);
+      headingsDiv.appendChild(prefferedPriceDiv)
+      // add the paragraphs to show the new costs
+      const newShowPretFinal_Aer  = document.createElement('p')
+      const newShowPretFinal_Tren = document.createElement('p')
+      // make them hidden
+      newShowPretFinal_Aer.style.display = 'none'
+      newShowPretFinal_Tren.style.display = 'none'
+      prefferedPriceDiv.appendChild(newShowPretFinal_Aer)
+      prefferedPriceDiv.appendChild(newShowPretFinal_Tren)
+
+      // Parsing the User Costum Price
+      const priceInput = document.getElementById("arrowBtnPrice")
+
+      if (priceInput){
+        // show the input box for user costum price
+        addPrefferedPrice()
+
+        let userPrice = document.getElementById('userPrice')
+        // checking if user entered a new price
+        if (userPrice.value){
+          firstPrice = parseFloat(userPrice.value).toFixed(2)
+          firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
+
+          // calculate new cost including shippement comissions
+          const newCalcFinalPret_Aer = costFinalAchAer()
+          const newCalcFinalPret_Tren = costFinalAchTren()
+          
+          if (newCalcFinalPret_Aer && newCalcFinalPret_Tren) {
+            // display new costs
+            newShowPretFinal_Aer.innerHTML = `<strong>NOU* Cost Transport Aer: <span style="color: #850025;"> ${newCalcFinalPret_Aer} $</span></strong>`;
+            newShowPretFinal_Tren.innerHTML = `<strong>NOU* Cost Transport Tren: <span style="color: #850025;"> ${newCalcFinalPret_Tren} $</span></strong>`;
+            showElement(newShowPretFinal_Aer)
+            showElement(newShowPretFinal_Tren)
+          }
+        }
+      }
+
+
     });
   });
 
@@ -242,25 +245,46 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     return (+firstPrice + cTrspTren + cTaxVamTren + calculTVAtren).toFixed(2)
   }
 
-// document.getElementById('find-product').addEventListener("click", function() {
-//   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-//     const activeTab = tabs[0];
-//     // const tabUrl = activeTab.url;
+// Funcția care adaugă <span> cu iconița în heading
+function addArrowToHeading(heading) {
+  // 1. Crează elementul <span>
+  let span = document.createElement('span');
+  span.id = 'arrowBtnPrice';  // Setează ID-ul pentru span
 
-//     // console.log("Active Tab URL:", tabUrl);
+  // 2. Crează elementul <i> și adaugă clasele pentru iconiță
+  let icon = document.createElement('i');
+  icon.classList.add('fa-solid', 'fa-chevron-down', 'arrow');  // Adaugă clasele
 
-//     // În loc de chrome.scripting.executeScript, folosim chrome.tabs.executeScript în manifest v2
-//     chrome.tabs.executeScript(activeTab.id, {
-//       // code: '(' + findImage.toString() + ')()'  // Se injectează funcția findImage în tab-ul activ
-//       code: `
-//       function bla(){
-//         alert('hello')
-//       }
-//       bla()`
-      
-//     });
-//   });
-// });
+  // 3. Adaugă elementul <i> în <span>
+  span.appendChild(icon);
+
+  // // 4. Găsește heading-ul (în acest caz, un <h1>) în care vrei să adaugi <span>
+  // let heading = document.getElementById('myHeading');  // Asigură-te că ai un heading cu id="myHeading"
+
+  // 5. Adaugă <span> în interiorul heading-ului
+  heading.appendChild(span);
+}
+
+function addPrefferedPrice() {
+  document.getElementById("arrowBtnPrice").addEventListener("click", function() {
+    let inputForm = document.getElementById("inputPrefferedPrice");
+    let arrow = document.querySelector(".arrow");
+    if (inputForm.style.display === "none" || inputForm.style.display === "") {
+        inputForm.style.display = "block";
+        // arrow.classList.remove("rotate");
+        arrow.classList.toggle("rotate")
+    } else {
+        inputForm.style.display = "none";
+        arrow.classList.toggle("rotate")
+    }
+    });
+
+}
+
+
+function showElement(element) {
+  element.style.display = 'block'
+}
 
 document.getElementById('find-product').addEventListener("click", function() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -275,5 +299,3 @@ document.getElementById('find-product').addEventListener("click", function() {
   });
   
 });
-
-  
