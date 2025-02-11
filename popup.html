@@ -5,7 +5,7 @@
     <title>Import China-Ro</title>
     <style>
       body {
-        width: 300px;
+        width: 350px;
         font-family: Arial, sans-serif;
         padding: 10px;
       }
@@ -42,7 +42,6 @@
         margin-top: 20px;
         width: 200px;
         display: none;
-        
       }
       
       input[type="number"] {
@@ -86,6 +85,7 @@
 
     <!-- Form for preffered price -->
     <div id="inputPrefferedPrice">
+      <label for="userPrice">Pret in $:</label>
       <input type="number" id="userPrice" step="any" placeholder="Introduceti pret achizitie China in $">
       <script src="popup.js"></script>
     </div>
@@ -100,7 +100,11 @@
     <div id="headings"></div>
     <script src="popup.js" type="module"></script>
 
+    <div>
 
+      <iframe style="width: 200px; height: 95px;" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" src="https://www.cursbnr.ro/insert/cursvalutar.php?w=200&b=f7f7f7&bl=dcdcdc&ttc=0a6eab&tc=000000&diff=1&ron=1&cb=1&pics=1"></iframe>
+
+    </div>
     <!-- Formular pentru variabilele de tip float -->
     
     <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow comission"></i></span></h3>

@@ -15,6 +15,8 @@ let cmsEmag =           undefined;
 
 let transportWeight = undefined;
 let firstPrice = undefined;
+let usdExchange = undefined;
+
 
 function checkComissions(){
   let {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11} = loadVariables();
@@ -118,8 +120,15 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       let costFinalAch_Aer = costFinalAchAer();
       let costFinalAch_Tren = costFinalAchTren();
 
-      showFinalCost_aer.innerHTML = `<strong>Cost Transport Aer: <span style="color: #850025;"> ${costFinalAch_Aer} $</span></strong>`;
-      showFinalCost_tren.innerHTML = `<strong>Cost Transport Tren: <span style="color: #850025;"> ${costFinalAch_Tren} $ </span></strong>`;
+      // get the USD -> Ron value and convert it to number type
+      if (usdExchange) {
+        usdExchange = +usdExchange
+        usdExchange = usdExchange.toFixed(2)
+        usdExchange = +usdExchange
+      }
+
+      showFinalCost_aer.innerHTML = `<strong>Cost Transport Aer: <span style="color: #850025;"> ${costFinalAch_Aer} $ → ${(costFinalAch_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
+      showFinalCost_tren.innerHTML = `<strong>Cost Transport Tren: <span style="color: #850025;"> ${costFinalAch_Tren} $ → ${(costFinalAch_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
 
       finalCostsDiv.append(showFinalCost_aer);
       finalCostsDiv.append(showFinalCost_tren);
@@ -131,12 +140,17 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       const prefferedPriceDiv = document.createElement('div');
       const prefferedPriceTitle = document.createElement('h4');
       prefferedPriceTitle.textContent = 'Pret preferential? ';
+
+      // add arrow to extend the window for user to type a new price
       addArrowToHeading(prefferedPriceTitle);
+
       prefferedPriceDiv.appendChild(prefferedPriceTitle);
       headingsDiv.appendChild(prefferedPriceDiv)
+
       // add the paragraphs to show the new costs
       const newShowPretFinal_Aer  = document.createElement('p')
       const newShowPretFinal_Tren = document.createElement('p')
+
       // make them hidden
       newShowPretFinal_Aer.style.display = 'none'
       newShowPretFinal_Tren.style.display = 'none'
@@ -162,8 +176,8 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
           
           if (newCalcFinalPret_Aer && newCalcFinalPret_Tren) {
             // display new costs
-            newShowPretFinal_Aer.innerHTML = `<strong>NOU* Cost Transport Aer: <span style="color: #850025;"> ${newCalcFinalPret_Aer} $</span></strong>`;
-            newShowPretFinal_Tren.innerHTML = `<strong>NOU* Cost Transport Tren: <span style="color: #850025;"> ${newCalcFinalPret_Tren} $</span></strong>`;
+            newShowPretFinal_Aer.innerHTML = `<strong>NOU* Cost Transport Aer: <span style="color: #850025;"> ${newCalcFinalPret_Aer} $ → ${(newCalcFinalPret_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
+            newShowPretFinal_Tren.innerHTML = `<strong>NOU* Cost Transport Tren: <span style="color: #850025;"> ${newCalcFinalPret_Tren} $ → ${(newCalcFinalPret_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
             showElement(newShowPretFinal_Aer)
             showElement(newShowPretFinal_Tren)
           }
@@ -245,23 +259,19 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     return (+firstPrice + cTrspTren + cTaxVamTren + calculTVAtren).toFixed(2)
   }
 
-// Funcția care adaugă <span> cu iconița în heading
+// Function to add the arrow next to "Pret preferential?"
 function addArrowToHeading(heading) {
-  // 1. Crează elementul <span>
+  // 1. Create the element <span>
   let span = document.createElement('span');
   span.id = 'arrowBtnPrice';  // Setează ID-ul pentru span
 
-  // 2. Crează elementul <i> și adaugă clasele pentru iconiță
+  // 2. Create the element <i> and add it for the icon class
   let icon = document.createElement('i');
-  icon.classList.add('fa-solid', 'fa-chevron-down', 'arrow');  // Adaugă clasele
+  icon.classList.add('fa-solid', 'fa-chevron-down', 'arrow');  // add classes
 
-  // 3. Adaugă elementul <i> în <span>
+  // 3. Add the element <i> in <span>
   span.appendChild(icon);
 
-  // // 4. Găsește heading-ul (în acest caz, un <h1>) în care vrei să adaugi <span>
-  // let heading = document.getElementById('myHeading');  // Asigură-te că ai un heading cu id="myHeading"
-
-  // 5. Adaugă <span> în interiorul heading-ului
   heading.appendChild(span);
 }
 
@@ -278,13 +288,60 @@ function addPrefferedPrice() {
         arrow.classList.toggle("rotate")
     }
     });
-
 }
-
 
 function showElement(element) {
   element.style.display = 'block'
 }
+
+function getExchangeRate() {
+  return fetch('https://www.bnr.ro/nbrfxrates.xml')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Eroare la accesarea datelor');
+      }
+      return response.text();  // Return in XML format
+    })
+    .then(data => {
+      // Parse XML file in DOM format
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(data, "text/xml");
+
+      // Look for exchange USD in XML
+      const usdElement = xmlDoc.querySelector('Rate[currency="USD"]');
+
+      if (usdElement) {
+        const usdRate = usdElement.textContent; // extract the USD rate
+        console.log("Cursul USD:", usdRate);
+        return usdRate;  // return the USD rate
+      } else {
+        console.log("Cursul USD nu a fost gasit.");
+        return null;  // return null in case of missing rate
+      }
+    })
+    .catch(error => {
+      console.error('A aparut o eroare:', error);
+      return null;  // return error in case of something is wrong
+    });
+}
+
+// call the function:
+function processUSDRate() {
+  getExchangeRate().then(usdValue => {
+    if (usdValue) {
+      console.log("Cursul USD este:", usdValue);
+      usdExchange = usdValue
+    } else {
+      console.log("Nu s-a găsit cursul USD.");
+    }
+  }).catch(error => {
+    console.log("Eroare:", error);
+  });
+}
+
+// report the USD - RON rate
+processUSDRate();
+
 
 document.getElementById('find-product').addEventListener("click", function() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -297,5 +354,4 @@ document.getElementById('find-product').addEventListener("click", function() {
       code: 'findImage()'  // Execută funcția findImage în contextul paginii
     });
   });
-  
 });
