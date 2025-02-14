@@ -136,20 +136,23 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       headingsDiv.appendChild(transportCostDiv);
       headingsDiv.appendChild(finalCostsDiv);
 
-      // creating the display for User Custom Price
+      // Creating the display for User Custom Price
       const prefferedPriceDiv = document.createElement('div');
       const prefferedPriceTitle = document.createElement('h4');
       prefferedPriceTitle.textContent = 'Pret preferential? ';
 
       // add arrow to extend the window for user to type a new price
-      addArrowToHeading(prefferedPriceTitle);
+      addArrowToHeading(prefferedPriceTitle, 'arrowBtnPrice', '.arrow');
 
       prefferedPriceDiv.appendChild(prefferedPriceTitle);
-      headingsDiv.appendChild(prefferedPriceDiv)
+      const inputPrfPrice = document.getElementById('inputPrefferedPrice')
+      prefferedPriceDiv.appendChild(inputPrfPrice)
 
       // add the paragraphs to show the new costs
       const newShowPretFinal_Aer  = document.createElement('p')
       const newShowPretFinal_Tren = document.createElement('p')
+      newShowPretFinal_Aer.id = "newCost_Aer"
+      newShowPretFinal_Tren.id = "newCost_Tren"
 
       // make them hidden
       newShowPretFinal_Aer.style.display = 'none'
@@ -157,34 +160,27 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       prefferedPriceDiv.appendChild(newShowPretFinal_Aer)
       prefferedPriceDiv.appendChild(newShowPretFinal_Tren)
 
+      headingsDiv.appendChild(prefferedPriceDiv)
+
+
       // Parsing the User Costum Price
       const priceInput = document.getElementById("arrowBtnPrice")
-
+      
       if (priceInput){
         // show the input box for user costum price
-        addPrefferedPrice()
-
-        let userPrice = document.getElementById('userPrice')
-        // checking if user entered a new price
-        if (userPrice.value){
-          firstPrice = parseFloat(userPrice.value).toFixed(2)
-          firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
-
-          // calculate new cost including shippement comissions
-          const newCalcFinalPret_Aer = costFinalAchAer()
-          const newCalcFinalPret_Tren = costFinalAchTren()
-          
-          if (newCalcFinalPret_Aer && newCalcFinalPret_Tren) {
-            // display new costs
-            newShowPretFinal_Aer.innerHTML = `<strong>NOU* Cost Transport Aer: <span style="color: #850025;"> ${newCalcFinalPret_Aer} $ → ${(newCalcFinalPret_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
-            newShowPretFinal_Tren.innerHTML = `<strong>NOU* Cost Transport Tren: <span style="color: #850025;"> ${newCalcFinalPret_Tren} $ → ${(newCalcFinalPret_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
-            showElement(newShowPretFinal_Aer)
-            showElement(newShowPretFinal_Tren)
-          }
-        }
+        addInputForm('arrowBtnPrice', 'inputPrefferedPrice', '.arrow')
+        document.getElementById('prefPriceBtn').addEventListener('click', showPrefferedPrices)
       }
 
+      const newDiv = addNewField('Calculeaza profit vanzare ', 'arrowSellBtn', '.arrow')
+      headingsDiv.appendChild(newDiv)
+      const arrowProfit = document.getElementById('arrowSellBtn')
 
+      if (arrowProfit) {      
+        addInputForm('arrowSellBtn', 'inputSellPrice', '.arrow')
+        document.getElementById('profitButton').addEventListener('click', showProfit)
+      }
+      
     });
   });
 
@@ -226,9 +222,9 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     // (pret ach China + cost trans aer + taxe vam) * tva
     const costTrspAer = costTransportAer();
     const cTaxVamAer = costTaxeVamaleAer();
-    const calculTVA = 0 + '.' + tva
+    // const calculTVA = 0 + '.' + tva
 
-    return (+firstPrice + costTrspAer + cTaxVamAer) * calculTVA
+    return (+firstPrice + costTrspAer + cTaxVamAer) * tva/100
   }
 
   function calculTVA_tren(){
@@ -259,15 +255,113 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     return (+firstPrice + cTrspTren + cTaxVamTren + calculTVAtren).toFixed(2)
   }
 
+  function pretEmagFaraTVA(priceSelleMAG){
+    return (priceSelleMAG/(1+'.'+ tva))
+  }
+
+  function cComisionEmagFaraTVA(option, priceSelleMAG) {
+    // (pret vanzare eMAG + cost trsp fact. client) * comsionEmag 
+    if (option == 1 || option == 3) {      
+      return (priceSelleMAG + costTrspFacClient) * cmsEmag/100
+    } 
+    // (pret vanzare eMAG + cost trsp fact. client) / (1 + TVA) * comsionEmag -> platitor TVA
+    else if (option == 2 || option == 4){
+      // priceSelleMAG = pretEmagFaraTVA(priceSelleMAG) // pret eMAG fara TVA
+      return (priceSelleMAG + costTrspFacClient/(1+'.'+tva)) * cmsEmag/100
+    }
+    
+  }
+
+  function cTVAcomissionEmag(option, priceSelleMAG) {
+    // cComisionEmagFaraTVA * TVA
+    if (option == 1 || option == 3){
+      return cComisionEmagFaraTVA(option, priceSelleMAG) * tva/100
+    }
+    // cComisionEmagTVA * TVA
+    else if (option == 2 || option == 4) {
+      // priceSelleMAG = pretEmagFaraTVA(priceSelleMAG)
+      return cComisionEmagFaraTVA(option, priceSelleMAG) * tva/100 
+    }
+  }
+
+  function cImpozitAer(option, priceSelleMAG){
+    // U - pret vanzare eMAG
+    // V - Valoarea Comision eMAG fara TVA > cComisionEmagFaraTVA()
+    // W - TVA Comision eMAG > cTVAcomissionEmag()
+    // O - Cost final achizitie Aer
+    // P - Cost final achizitie Tren
+    // M - TVA import aer > calculTVA_aer()
+    // N - TVA import tren > calculTVA_tren ()
+    // C19 - TVA
+    // C21 - Impozit profit
+    // C23 - Consumabile produs impachetare > costTrspFacClient
+    // C26 - costTrspContr
+    // C29 - costTrspFacClient
+    // X - Impozit Aer > cImpozitAer()
+
+    //"Impozit pe profit neplatitor de TVA",((U35+$C$29)-(V35+W35+O35+$C$26+$C$23))*$C$21,
+    // ((pret vanzare eMAG + cost trsp fact. client) - (cComisionEmagFaraTVA() + cTVAcomissionEmag + cFinalAchz_Aer + costTrspContr + consImpProd))* impozitProfit
+    let costFinalAchizitie_Ron = costFinalAchAer()*usdExchange
+    if (option == 1){      
+      impozitProfit = 16
+      return (((priceSelleMAG + costTrspFacClient) - (cComisionEmagFaraTVA(option, priceSelleMAG) + cTVAcomissionEmag(option, priceSelleMAG) + costFinalAchizitie_Ron + costTrspContr +consImpProd))*impozitProfit/100)
+    }
+
+    // "Impozit pe profit platitor de TVA",
+    // ((U35+$C$29/(1+$C$19))-(V35+(O35-M35)+($C$26+$C$23)/(1+$C$19)))*$C$21
+    // ((pret vanzare eMAG + cost trsp fact. client)/(1+tva)) - (cComisionEmagFaraTVA()+(costFinAchz_aer-calculTVA_aer)+(costTrspFacClient+consImpProd)/(1+TVA)))* impozitProfit
+    else if (option == 2){
+      impozitProfit = 16
+      let calculTVA = calculTVA_aer() *  usdExchange
+      return ((priceSelleMAG + costTrspFacClient/(1+'.'+tva)) - (cComisionEmagFaraTVA(option, priceSelleMAG)+(costFinalAchizitie_Ron - calculTVA) + (costTrspContr+consImpProd)/(1+'.'+tva))) * impozitProfit/100
+    }
+    // "Microintreprindere (un angajat minim) neplatitor de TVA",(U35+$C$29)*$C$21,
+    // ((pret vanzare eMAG + cost trsp fact. client)/(1+TVA)) * impozitProfit
+    // (U35+$C$29)*$C$21
+    else if (option == 3) {
+      impozitProfit = 1
+      return ((priceSelleMAG + costTrspFacClient) * impozitProfit/100)
+    }
+    // (pret vanzare eMAG + cost trsp fact. client)*impozitProfit, 
+    // (pret vanzare eMAG + cost trsp fact. client) * impozitProfit
+    // (U35+$C$29/(1+$C$19))*$C$21
+    else {
+      impozitProfit = 1
+      return ((priceSelleMAG + costTrspFacClient/(1+'.'+tva)) * impozitProfit/100)
+    }
+    
+
+  }
+
+  function cProfitFinalAer(option, priceSelleMAG) {
+    let costFinalAchizitie_Ron = costFinalAchAer()*usdExchange
+
+    // "Impozit pe profit neplatitor de TVA",
+    // ((U35+$C$29)-(V35+W35+O35+$C$26+$C$23))-X35,
+    // ((pret vanzare eMAG + cost trsp fact. client) - (cComisionEmagFaraTVA()+cTVAcomissionEmag()+cFinalAchz_aer+costTrspContr+costTrspFacClient)-cImpozitAer()
+    if (option == 1 || option == 3) {
+      return ((priceSelleMAG+costTrspFacClient)-(cComisionEmagFaraTVA(option, priceSelleMAG) + cTVAcomissionEmag(option, priceSelleMAG) + costFinalAchizitie_Ron + costTrspContr+consImpProd)) - cImpozitAer(option, priceSelleMAG)
+    }
+    // "Microintreprindere (un angajat minim) neplatitor de TVA"),
+    // ((U35+$C$29/(1+$C$19))-(V35+(O35-M35)+($C$26+$C$23)/(1+$C$19)))-X35
+    // ((pret vanzare eMAG + cost trsp fact. client)/(1+TVA))-(cComisionEmagFaraTVA()+(costFinAchz_aer+calculTVA_aer)+(costTrspFacClient+consImpProd)/(1+TVA)))- cImpozitAer()
+    else {
+      
+      priceSelleMAG = pretEmagFaraTVA(priceSelleMAG)
+      let calculTVA = calculTVA_aer() * usdExchange
+      return ((priceSelleMAG + costTrspFacClient/(1+'.'+tva))-(cComisionEmagFaraTVA(option, priceSelleMAG)+(costFinalAchizitie_Ron - calculTVA)+(costTrspContr+consImpProd)/(1+'.'+tva))) - cImpozitAer(option, priceSelleMAG)
+    }
+  }
+
 // Function to add the arrow next to "Pret preferential?"
-function addArrowToHeading(heading) {
+function addArrowToHeading(heading, arrowId, arrowClass) {
   // 1. Create the element <span>
   let span = document.createElement('span');
-  span.id = 'arrowBtnPrice';  // Setează ID-ul pentru span
+  span.id = arrowId;  // Setează ID-ul pentru span
 
   // 2. Create the element <i> and add it for the icon class
   let icon = document.createElement('i');
-  icon.classList.add('fa-solid', 'fa-chevron-down', 'arrow');  // add classes
+  icon.classList.add('fa-solid', 'fa-chevron-down', arrowClass);  // add classes
 
   // 3. Add the element <i> in <span>
   span.appendChild(icon);
@@ -275,10 +369,10 @@ function addArrowToHeading(heading) {
   heading.appendChild(span);
 }
 
-function addPrefferedPrice() {
-  document.getElementById("arrowBtnPrice").addEventListener("click", function() {
-    let inputForm = document.getElementById("inputPrefferedPrice");
-    let arrow = document.querySelector(".arrow");
+function addInputForm(arrowID, inputID, arrowClass) {
+  document.getElementById(arrowID).addEventListener("click", function() {
+    let inputForm = document.getElementById(inputID);
+    let arrow = document.querySelector(arrowClass);
     if (inputForm.style.display === "none" || inputForm.style.display === "") {
         inputForm.style.display = "block";
         // arrow.classList.remove("rotate");
@@ -290,9 +384,6 @@ function addPrefferedPrice() {
     });
 }
 
-function showElement(element) {
-  element.style.display = 'block'
-}
 
 function getExchangeRate() {
   return fetch('https://www.bnr.ro/nbrfxrates.xml')
@@ -342,6 +433,46 @@ function processUSDRate() {
 // report the USD - RON rate
 processUSDRate();
 
+
+function addNewField(title, arrowBtnID, arrowClass) {
+  const headDiv = document.createElement('div')
+  const headTitle = document.createElement('h4')
+  headTitle.textContent = title
+  addArrowToHeading(headTitle, arrowBtnID, arrowClass)
+  headDiv.appendChild(headTitle)
+
+  return headDiv
+};
+
+function showPrefferedPrices(){
+  console.log('click')
+  let userPrice = document.getElementById('userPrice')
+  firstPrice = parseFloat(userPrice.value).toFixed(2)
+  const {calculComisionAgent, calculTransportFabAg} = costAchizitieChina();
+  firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
+  
+  const preffCostAer = document.getElementById('newCost_Aer')
+  const preffCostTren = document.getElementById('newCost_Tren')
+  const newCalcFinalPret_Aer = costFinalAchAer()
+  const newCalcFinalPret_Tren = costFinalAchTren()
+  preffCostAer.innerHTML = `<strong>NOU* Cost Transport Aer: <span style="color: #850025;"> ${newCalcFinalPret_Aer} $ → ${(newCalcFinalPret_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
+  preffCostTren.innerHTML = `<strong>NOU* Cost Transport Tren: <span style="color: #850025;"> ${newCalcFinalPret_Tren} $ → ${(newCalcFinalPret_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
+            
+  preffCostAer.style.display = 'block'
+  preffCostTren.style.display = 'block'
+}
+
+function showProfit(){
+  let priceEmag = document.getElementById('sellPrice')
+  let option = document.getElementById('options')
+  const profitAer = cProfitFinalAer(option.value, +priceEmag.value).toFixed(2)
+  // const profitAer = cImpozitAer(option.value, +priceEmag.value)
+
+  const showProfitAer = document.getElementById("profitAer_display")
+
+  showProfitAer.innerText = `Profit aer: ${profitAer} RON`
+  showProfitAer.style.display = 'block'
+}
 
 document.getElementById('find-product').addEventListener("click", function() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
