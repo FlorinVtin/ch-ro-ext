@@ -284,7 +284,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     }
   }
 
-  function cImpozitAer(option, priceSelleMAG){
+  function cImpozitAer(option, priceSelleMAG, costFinalTypTransport){
     // U - pret vanzare eMAG
     // V - Valoarea Comision eMAG fara TVA > cComisionEmagFaraTVA()
     // W - TVA Comision eMAG > cTVAcomissionEmag()
@@ -301,7 +301,15 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
 
     //"Impozit pe profit neplatitor de TVA",((U35+$C$29)-(V35+W35+O35+$C$26+$C$23))*$C$21,
     // ((pret vanzare eMAG + cost trsp fact. client) - (cComisionEmagFaraTVA() + cTVAcomissionEmag + cFinalAchz_Aer + costTrspContr + consImpProd))* impozitProfit
-    let costFinalAchizitie_Ron = costFinalAchAer()*usdExchange
+    let costFinalAchizitie_Ron = undefined;
+    debugger
+    if (costFinalTypTransport == 'aer') {
+      costFinalAchizitie_Ron = costFinalAchAer()*usdExchange
+    }
+    else if (costFinalTypTransport == 'tren') {
+      costFinalAchizitie_Ron = costFinalAchTren()*usdExchange
+    }
+
     if (option == 1){      
       impozitProfit = 16
       return (((priceSelleMAG + costTrspFacClient) - (cComisionEmagFaraTVA(option, priceSelleMAG) + cTVAcomissionEmag(option, priceSelleMAG) + costFinalAchizitie_Ron + costTrspContr +consImpProd))*impozitProfit/100)
@@ -312,7 +320,16 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     // ((pret vanzare eMAG + cost trsp fact. client)/(1+tva)) - (cComisionEmagFaraTVA()+(costFinAchz_aer-calculTVA_aer)+(costTrspFacClient+consImpProd)/(1+TVA)))* impozitProfit
     else if (option == 2){
       impozitProfit = 16
-      let calculTVA = calculTVA_aer() *  usdExchange
+
+      let calculTVA;
+
+      if (costFinalTypTransport == 'aer'){
+        calculTVA = calculTVA_aer() *  usdExchange
+      }
+      else if (costFinalTypTransport == 'tren'){
+        calculTVA = calculTVA_tren() *  usdExchange
+      }
+      
       return ((priceSelleMAG + costTrspFacClient/(1+'.'+tva)) - (cComisionEmagFaraTVA(option, priceSelleMAG)+(costFinalAchizitie_Ron - calculTVA) + (costTrspContr+consImpProd)/(1+'.'+tva))) * impozitProfit/100
     }
     // "Microintreprindere (un angajat minim) neplatitor de TVA",(U35+$C$29)*$C$21,
@@ -329,18 +346,22 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       impozitProfit = 1
       return ((priceSelleMAG + costTrspFacClient/(1+'.'+tva)) * impozitProfit/100)
     }
-    
-
   }
 
-  function cProfitFinalAer(option, priceSelleMAG) {
-    let costFinalAchizitie_Ron = costFinalAchAer()*usdExchange
+  function cProfitFinal(option, priceSelleMAG, costFinalTypTransport) {
+    let costFinalAchizitie_Ron = undefined
 
+    if (costFinalTypTransport == 'aer'){
+      costFinalAchizitie_Ron = costFinalAchAer()*usdExchange
+    }
+    else if (costFinalTypTransport == 'tren'){
+      costFinalAchizitie_Ron = costFinalAchTren()*usdExchange
+    }
     // "Impozit pe profit neplatitor de TVA",
     // ((U35+$C$29)-(V35+W35+O35+$C$26+$C$23))-X35,
     // ((pret vanzare eMAG + cost trsp fact. client) - (cComisionEmagFaraTVA()+cTVAcomissionEmag()+cFinalAchz_aer+costTrspContr+costTrspFacClient)-cImpozitAer()
     if (option == 1 || option == 3) {
-      return ((priceSelleMAG+costTrspFacClient)-(cComisionEmagFaraTVA(option, priceSelleMAG) + cTVAcomissionEmag(option, priceSelleMAG) + costFinalAchizitie_Ron + costTrspContr+consImpProd)) - cImpozitAer(option, priceSelleMAG)
+      return ((priceSelleMAG+costTrspFacClient)-(cComisionEmagFaraTVA(option, priceSelleMAG) + cTVAcomissionEmag(option, priceSelleMAG) + costFinalAchizitie_Ron + costTrspContr+consImpProd)) - cImpozitAer(option, priceSelleMAG, costFinalTypTransport)
     }
     // "Microintreprindere (un angajat minim) neplatitor de TVA"),
     // ((U35+$C$29/(1+$C$19))-(V35+(O35-M35)+($C$26+$C$23)/(1+$C$19)))-X35
@@ -348,8 +369,16 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     else {
       
       priceSelleMAG = pretEmagFaraTVA(priceSelleMAG)
-      let calculTVA = calculTVA_aer() * usdExchange
-      return ((priceSelleMAG + costTrspFacClient/(1+'.'+tva))-(cComisionEmagFaraTVA(option, priceSelleMAG)+(costFinalAchizitie_Ron - calculTVA)+(costTrspContr+consImpProd)/(1+'.'+tva))) - cImpozitAer(option, priceSelleMAG)
+
+      let calculTVA;
+
+      if (costFinalTypTransport == 'aer'){
+        calculTVA = calculTVA_aer() *  usdExchange
+      }
+      else if (costFinalTypTransport == 'tren'){
+        calculTVA = calculTVA_tren() *  usdExchange
+      }
+      return ((priceSelleMAG + costTrspFacClient/(1+'.'+tva))-(cComisionEmagFaraTVA(option, priceSelleMAG)+(costFinalAchizitie_Ron - calculTVA)+(costTrspContr+consImpProd)/(1+'.'+tva))) - cImpozitAer(option, priceSelleMAG, costFinalTypTransport)
     }
   }
 
@@ -465,13 +494,18 @@ function showPrefferedPrices(){
 function showProfit(){
   let priceEmag = document.getElementById('sellPrice')
   let option = document.getElementById('options')
-  const profitAer = cProfitFinalAer(option.value, +priceEmag.value).toFixed(2)
+  const profitAer = cProfitFinal(option.value, +priceEmag.value, 'aer').toFixed(2)
+  const profitTren = cProfitFinal(option.value, +priceEmag.value, 'tren').toFixed(2)
   // const profitAer = cImpozitAer(option.value, +priceEmag.value)
 
   const showProfitAer = document.getElementById("profitAer_display")
+  const showProfitTren = document.getElementById("profitTren_display")
 
   showProfitAer.innerText = `Profit aer: ${profitAer} RON`
+  showProfitTren.innerText = `Profit tren/mare: ${profitTren} RON`
+
   showProfitAer.style.display = 'block'
+  showProfitTren.style.display = 'block'
 }
 
 document.getElementById('find-product').addEventListener("click", function() {
