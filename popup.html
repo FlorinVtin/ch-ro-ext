@@ -101,16 +101,26 @@
   <body>
     <!-- Secțiunea pentru rezultate -->
     <div id="headings"></div>
+    <div id="prefferedPriceDiv" class="hidden">
+      <h4>Pret preferential? <span id="arrowBtnPrice"><i class="fa-solid fa-chevron-down arrow-preffered"></i></span></h4>
 
+    </div>
+
+    <div id="headings"></div>
 
     <!-- Form for preffered price -->
     <div id="inputPrefferedPrice">
       <label for="userPrice">Pret in $:</label>
       <input type="number" id="userPrice" step="any" placeholder="Introduceti pret achizitie China in $">
       <button type="submit" class="button" id="prefPriceBtn">Calculeaza preferential</button>
+      <p id="newCost_Aer"></p>
+      <p id="newCost_Tren"></p>
       <script src="popup.js"></script>
     </div>
 
+    <div id="calculProfit" class="hidden">
+      <h4>Calculeaza profit vanzare <span id="arrowSellBtn"><i class="fa-solid fa-chevron-down arrow-profit"></i></span></h4>
+    </div>
     <!-- Form for sell price in Romania after importing from China -->
     <div id="inputSellPrice">
       <label for="inputSellPrice">Pret vanzare dupa import in Lei:</label>
@@ -159,7 +169,7 @@
 
     <!-- Formular pentru variabilele de tip float -->
     
-    <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow comission"></i></span></h3>
+    <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow-comission"></i></span></h3>
 
 
     <div id="inputForm">
@@ -202,7 +212,7 @@
       
       <button id="saveButton">Salveaza comisioanele</button>
       <script src="comission.js" type="module"></script>
-      <script src="toggle.js"></script>
+      <script src="popup.js"></script>
 
 
     </div>

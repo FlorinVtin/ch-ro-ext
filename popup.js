@@ -45,6 +45,8 @@ function checkComissions(){
   cmsEmag           = parseFloat(document.getElementById('var11').value);
 }
 
+document.getElementById("arrowBtn").addEventListener("click", showComissions)
+
 
 document.getElementById('scrapeButton').addEventListener('click', function() {
     // Send a message to the background to scrape the price and packaging details
@@ -138,50 +140,23 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       headingsDiv.appendChild(transportCostDiv);
       headingsDiv.appendChild(finalCostsDiv);
 
-      // Creating the display for User Custom Price
-      const prefferedPriceDiv = document.createElement('div');
-      const prefferedPriceTitle = document.createElement('h4');
-      prefferedPriceTitle.textContent = 'Pret preferential? ';
-
-      // add arrow to extend the window for user to type a new price
-      addArrowToHeading(prefferedPriceTitle, 'arrowBtnPrice', '.arrow');
-
-      prefferedPriceDiv.appendChild(prefferedPriceTitle);
-      const inputPrfPrice = document.getElementById('inputPrefferedPrice')
-      prefferedPriceDiv.appendChild(inputPrfPrice)
-
-      // add the paragraphs to show the new costs
-      const newShowPretFinal_Aer  = document.createElement('p')
-      const newShowPretFinal_Tren = document.createElement('p')
-      newShowPretFinal_Aer.id = "newCost_Aer"
-      newShowPretFinal_Tren.id = "newCost_Tren"
-
-      // make them hidden
-      newShowPretFinal_Aer.style.display = 'none'
-      newShowPretFinal_Tren.style.display = 'none'
-      prefferedPriceDiv.appendChild(newShowPretFinal_Aer)
-      prefferedPriceDiv.appendChild(newShowPretFinal_Tren)
-
-      headingsDiv.appendChild(prefferedPriceDiv)
-
-
+      // Preferred Price User Input
+      const prefferedPriceDiv = document.getElementById('prefferedPriceDiv')
+      prefferedPriceDiv.style.display = 'block'
       // Parsing the User Costum Price
-      const priceInput = document.getElementById("arrowBtnPrice")
-      
-      if (priceInput){
-        // show the input box for user costum price
-        addInputForm('arrowBtnPrice', 'inputPrefferedPrice', '.arrow')
-        document.getElementById('prefPriceBtn').addEventListener('click', showPrefferedPrices)
-      }
+      document.getElementById("arrowBtnPrice").addEventListener('click', showPrefferedInput)
+      document.getElementById('prefPriceBtn').addEventListener('click', showPrefferedPrices)
 
-      const newDiv = addNewField('Calculeaza profit vanzare ', 'arrowSellBtn', '.arrow')
-      headingsDiv.appendChild(newDiv)
-      const arrowProfit = document.getElementById('arrowSellBtn')
+      // Calcul Profit User Input
+      const calculProfitDiv = document.getElementById('calculProfit')
+      calculProfitDiv.style.display = 'block'
+      document.getElementById('arrowSellBtn').addEventListener('click', showCalculProfitInput)
+      document.getElementById('profitButton').addEventListener('click', showProfit)
 
-      if (arrowProfit) {      
-        addInputForm('arrowSellBtn', 'inputSellPrice', '.arrow')
-        document.getElementById('profitButton').addEventListener('click', showProfit)
-      }
+      // if (arrowProfit) {      
+      //   addInputForm('arrowSellBtn', 'inputSellPrice', '.arrow-sell')
+      //   document.getElementById('profitButton').addEventListener('click', showProfit)
+      // }
       
     });
   });
@@ -404,18 +379,63 @@ function addArrowToHeading(heading, arrowId, arrowClass) {
 function addInputForm(arrowID, inputID, arrowClass) {
   document.getElementById(arrowID).addEventListener("click", function() {
     let inputForm = document.getElementById(inputID);
-    let arrow = document.querySelector(arrowClass);
+    let arrow = document.querySelectorAll(arrowClass);
     if (inputForm.style.display === "none" || inputForm.style.display === "") {
         inputForm.style.display = "block";
         // arrow.classList.remove("rotate");
-        arrow.classList.toggle("rotate")
+        // arrow.classList.toggle("rotate")
     } else {
         inputForm.style.display = "none";
-        arrow.classList.toggle("rotate")
+        // arrow.classList.toggle("rotate")
     }
     });
 }
 
+
+function showPrefferedInput() {
+
+  let inputForm = document.getElementById('inputPrefferedPrice');
+  let arrow = document.querySelector('.arrow-preffered');
+  if (inputForm.style.display === "none" || inputForm.style.display === "") {
+      inputForm.style.display = "block";
+      // arrow.classList.remove("rotate");
+      arrow.classList.toggle("rotate")
+  } else {
+      inputForm.style.display = "none";
+      arrow.classList.toggle("rotate")
+  }
+
+}
+
+function showCalculProfitInput(){
+  let inputForm = document.getElementById('inputSellPrice');
+  let arrow = document.querySelector('.arrow-profit');
+  if (inputForm.style.display === "none" || inputForm.style.display === "") {
+      inputForm.style.display = "block";
+      // arrow.classList.remove("rotate");
+      arrow.classList.toggle("rotate")
+  } else {
+      inputForm.style.display = "none";
+      arrow.classList.toggle("rotate")
+  }
+}
+
+function showComissions(){
+  let inputForm = document.getElementById('inputForm');
+  let arrow = document.querySelectorAll('.arrow-comission');
+  if (inputForm.style.display === "none" || inputForm.style.display === "") {
+      inputForm.style.display = "block";
+      // arrow.classList.remove("rotate");
+      arrow.classList.toggle("rotate")
+  } else {
+      inputForm.style.display = "none";
+      arrow.classList.toggle("rotate")
+
+      // arrow.classList.add("rotate");
+      // arrow.classList.remove("rotate");
+
+  }
+}
 
 function getExchangeRate() {
   return fetch('https://www.bnr.ro/nbrfxrates.xml')
@@ -481,7 +501,7 @@ function showPrefferedPrices(){
   // let initialPrice = +firstPrice
   firstPrice = parseFloat(userPrice.value).toFixed(2)
 
-  debugger
+  
   if (userPrice.value == null || userPrice.value == undefined || isNaN(parseFloat(userPrice.value))){
     firstPrice = initialPrice
   }
@@ -489,6 +509,7 @@ function showPrefferedPrices(){
   const {calculComisionAgent, calculTransportFabAg} = costAchizitieChina();
   firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
   
+  debugger
   const preffCostAer = document.getElementById('newCost_Aer')
   const preffCostTren = document.getElementById('newCost_Tren')
   const newCalcFinalPret_Aer = costFinalAchAer()
@@ -529,7 +550,6 @@ function showProfit(){
   procentProfitAer = ((profitAer/+priceEmag) * 100).toFixed(2)
   procentProfitTren = ((profitTren/+priceEmag) * 100).toFixed(2)
   
-  debugger
   if (procentProfitAer && procentProfitTren){
     if (procentProfitAer >= 30){
       procentAer_display.style.backgroundColor = '#008000'
@@ -548,7 +568,7 @@ function showProfit(){
     procentAer_display.style.color = '#ffffff'
     procentTren_display.style.color = '#ffffff'
 
-    procentAer_display.innerText = `Profit Procentual Aer: ${procentProfitAer} %`
+    procentAer_display.innerText = `Profit Procentual Aer:  ${procentProfitAer} %`
     procentTren_display.innerText = `Profit Procentual Tren: ${procentProfitTren} %`
 
     procentAer_display.style.display = 'block'
@@ -569,3 +589,6 @@ document.getElementById('find-product').addEventListener("click", function() {
     });
   });
 });
+
+
+
