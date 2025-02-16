@@ -160,6 +160,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       inputForm.style.display ='block'
       document.getElementById('arrowSellBtn').addEventListener('click', showCalculProfitInput)
       document.getElementById('profitButton').addEventListener('click', showProfit)
+      document.getElementById('copylink').addEventListener('click', copyLink)
 
       // if (arrowProfit) {      
       //   addInputForm('arrowSellBtn', 'inputSellPrice', '.arrow-sell')
@@ -583,6 +584,20 @@ function showProfit(){
     procentTren_display.style.display = 'block'
   }
   
+}
+
+function copyLink() {
+  // Copiază URL-ul paginii curente
+  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    const activeTab = tabs[0];
+    // const tabUrl = activeTab.url;
+    // console.log("Active Tab URL:", tabUrl);
+    navigator.clipboard.writeText(activeTab.url).then(function() {
+      alert('URL copied to clipboard!');
+    }).catch(function(error) {
+      alert('Failed to copy URL: ' + error);
+    });
+  });
 }
 
 document.getElementById('find-product').addEventListener("click", function() {
