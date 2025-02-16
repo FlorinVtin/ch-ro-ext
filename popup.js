@@ -118,6 +118,8 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       checkComissions()
       const {calculComisionAgent, calculTransportFabAg} = costAchizitieChina();
 
+      let showPrice = firstPrice
+
       firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
 
       // show the total costs
@@ -131,9 +133,13 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
         usdExchange = +usdExchange
       }
 
+      const priceDiv = document.getElementById('price')
+
+      priceDiv.innerHTML = `<strong>Pretul produsului luat in calcul: <span style="color: #850025;"> ${+showPrice} $ → ${(+showPrice*usdExchange).toFixed(2)} RON </span></strong>`
       showFinalCost_aer.innerHTML = `<strong>Cost Transport Aer: <span style="color: #850025;"> ${costFinalAch_Aer} $ → ${(costFinalAch_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
       showFinalCost_tren.innerHTML = `<strong>Cost Transport Tren: <span style="color: #850025;"> ${costFinalAch_Tren} $ → ${(costFinalAch_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
 
+      finalCostsDiv.append(priceDiv)
       finalCostsDiv.append(showFinalCost_aer);
       finalCostsDiv.append(showFinalCost_tren);
 
@@ -150,6 +156,8 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       // Calcul Profit User Input
       const calculProfitDiv = document.getElementById('calculProfit')
       calculProfitDiv.style.display = 'block'
+      let inputForm = document.getElementById('inputSellPrice')
+      inputForm.style.display ='block'
       document.getElementById('arrowSellBtn').addEventListener('click', showCalculProfitInput)
       document.getElementById('profitButton').addEventListener('click', showProfit)
 

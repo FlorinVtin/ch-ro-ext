@@ -80,6 +80,9 @@
         background-color: #45a049;
       }
 
+      .show {
+        display: block;
+      }
       .hidden{
         display: none;
       }
@@ -113,6 +116,7 @@
       <label for="userPrice">Pret in $:</label>
       <input type="number" id="userPrice" step="any" placeholder="Introduceti pret achizitie China in $">
       <button type="submit" class="button" id="prefPriceBtn">Calculeaza preferential</button>
+      <p id="price"></p>
       <p id="newCost_Aer"></p>
       <p id="newCost_Tren"></p>
       <script src="popup.js"></script>
@@ -122,13 +126,13 @@
       <h4>Calculeaza profit vanzare <span id="arrowSellBtn"><i class="fa-solid fa-chevron-down arrow-profit"></i></span></h4>
     </div>
     <!-- Form for sell price in Romania after importing from China -->
-    <div id="inputSellPrice">
+    <div id="inputSellPrice" class="show">
       <label for="inputSellPrice">Pret vanzare dupa import in Lei:</label>
       <input type="number" id="sellPrice" step="any" placeholder="Pret vanzare in Lei">
       <label for="tvaCheck">Alege tipul firmei:</label>
       <div id="headings"></div>
       
-      <select name="companyType" id="options">
+      <select name="companyType" id="options" class="show">
         <option value="1">Impozit pe profit neplatitor de TVA</option>
         <option value="2">Impozit pe profit platitor de TVA</option>
         <option value="3">Microintreprindere (un angajat minim) neplatitor de TVA</option>
