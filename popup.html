@@ -70,14 +70,32 @@
 
       button {
         padding: 10px;
-        background-color: #4CAF50;
+        background-color: #cb6254;
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
       }
       button:hover {
-        background-color: #45a049;
+        background-color: #b34d33;
+      }
+
+      .button-blue{
+        background-color: #6897BB;
+      }
+
+      .button-blue:hover{
+        /* padding: 13px; */
+        background-color: #088DA5;
+      }
+
+      .button-orange{
+        background-color: #ff8c00;
+      }
+
+      .button-orange:hover{
+        /* padding: 11px; */
+        background-color: #ff8000fa;
       }
 
       .show {
@@ -151,15 +169,15 @@
   
       <div id="headings"></div>
 
-      <button type="submit" id="profitButton" class="button">Calculeaza profit</button>
-      <button id="copylink"><i class="fa-regular fa-copy"></i></button>
+      <button type="submit" id="profitButton" class="button button-blue">Calculeaza profit</button>
+      <button id="copylink" class="button-blue"><i class="fa-regular fa-copy"></i></button>
       <script src="popup.js"></script>     
     </div>
     
     <!-- --------------------------------------- -->
     <div id="headings"></div>
 
-    <button id="scrapeButton">Calculeaza pret achizitie China</button>
+    <button id="scrapeButton" class="button-orange">Calculeaza pret achizitie China</button>
     <div id="headings"></div>
     <script src="popup.js" type="module"></script>
 
