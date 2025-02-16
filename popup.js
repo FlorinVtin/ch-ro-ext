@@ -16,6 +16,7 @@ let cmsEmag =           undefined;
 let transportWeight = undefined;
 let firstPrice = undefined;
 let usdExchange = undefined;
+let initialPrice = undefined
 
 
 function checkComissions(){
@@ -100,6 +101,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       transportCostDiv.append(transport);
 
       firstPrice = response.priceDetails[0]
+      initialPrice = +firstPrice
  
       const finalCostsDiv = document.createElement('div');
       const finalCostsTitle = document.createElement('h4');
@@ -302,7 +304,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     //"Impozit pe profit neplatitor de TVA",((U35+$C$29)-(V35+W35+O35+$C$26+$C$23))*$C$21,
     // ((pret vanzare eMAG + cost trsp fact. client) - (cComisionEmagFaraTVA() + cTVAcomissionEmag + cFinalAchz_Aer + costTrspContr + consImpProd))* impozitProfit
     let costFinalAchizitie_Ron = undefined;
-    debugger
+    
     if (costFinalTypTransport == 'aer') {
       costFinalAchizitie_Ron = costFinalAchAer()*usdExchange
     }
@@ -357,6 +359,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
     else if (costFinalTypTransport == 'tren'){
       costFinalAchizitie_Ron = costFinalAchTren()*usdExchange
     }
+
     // "Impozit pe profit neplatitor de TVA",
     // ((U35+$C$29)-(V35+W35+O35+$C$26+$C$23))-X35,
     // ((pret vanzare eMAG + cost trsp fact. client) - (cComisionEmagFaraTVA()+cTVAcomissionEmag()+cFinalAchz_aer+costTrspContr+costTrspFacClient)-cImpozitAer()
@@ -474,9 +477,15 @@ function addNewField(title, arrowBtnID, arrowClass) {
 };
 
 function showPrefferedPrices(){
-  console.log('click')
   let userPrice = document.getElementById('userPrice')
+  // let initialPrice = +firstPrice
   firstPrice = parseFloat(userPrice.value).toFixed(2)
+
+  debugger
+  if (userPrice.value == null || userPrice.value == undefined || isNaN(parseFloat(userPrice.value))){
+    firstPrice = initialPrice
+  }
+
   const {calculComisionAgent, calculTransportFabAg} = costAchizitieChina();
   firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
   
@@ -496,7 +505,6 @@ function showProfit(){
   let option = document.getElementById('options')
   const profitAer = cProfitFinal(option.value, +priceEmag.value, 'aer').toFixed(2)
   const profitTren = cProfitFinal(option.value, +priceEmag.value, 'tren').toFixed(2)
-  // const profitAer = cImpozitAer(option.value, +priceEmag.value)
 
   const showProfitAer = document.getElementById("profitAer_display")
   const showProfitTren = document.getElementById("profitTren_display")
@@ -506,6 +514,47 @@ function showProfit(){
 
   showProfitAer.style.display = 'block'
   showProfitTren.style.display = 'block'
+
+  let procentProfitAer;
+  let procentProfitTren;
+  const procentAer_display = document.getElementById('procentAer_display')
+  const procentTren_display = document.getElementById('procentTren_display')
+
+  if (option.value == 2 || option.value == 4){
+    priceEmag = pretEmagFaraTVA(+priceEmag.value)
+  }
+  else {
+    priceEmag = +priceEmag.value
+  }
+  procentProfitAer = ((profitAer/+priceEmag) * 100).toFixed(2)
+  procentProfitTren = ((profitTren/+priceEmag) * 100).toFixed(2)
+  
+  debugger
+  if (procentProfitAer && procentProfitTren){
+    if (procentProfitAer >= 30){
+      procentAer_display.style.backgroundColor = '#008000'
+    }
+    else if (procentProfitAer < 30) {
+      procentAer_display.style.backgroundColor = "#F6546A"
+    }
+
+    if (procentProfitTren >= 30){
+      procentTren_display.style.backgroundColor = '#008000'
+    }
+    else if (procentProfitTren < 30) {
+      procentTren_display.style.backgroundColor = "#F6546A"
+    }
+
+    procentAer_display.style.color = '#ffffff'
+    procentTren_display.style.color = '#ffffff'
+
+    procentAer_display.innerText = `Profit Procentual Aer: ${procentProfitAer} %`
+    procentTren_display.innerText = `Profit Procentual Tren: ${procentProfitTren} %`
+
+    procentAer_display.style.display = 'block'
+    procentTren_display.style.display = 'block'
+  }
+  
 }
 
 document.getElementById('find-product').addEventListener("click", function() {
