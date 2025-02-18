@@ -11,44 +11,60 @@ let impozitProfit     = undefined;
 let consImpProd       = undefined;
 let costTrspContr     = undefined;
 let costTrspFacClient = undefined;
-let cmsEmag =           undefined;
+let cmsEmag           = undefined;
+
+// check saved option for company type
+let option            = document.getElementById('options');
+document.addEventListener('DOMContentLoaded', saveOption)
 
 let transportWeight = undefined;
 let firstPrice = undefined;
 let usdExchange = undefined;
 let initialPrice = undefined
+let listComissions = []
+let nonValueArray = []
 
 
 function checkComissions(){
-  let {var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11} = loadVariables();
-  // cAgent            = parseFloat(var1);
   cAgent            = parseFloat(document.getElementById('var1').value);
-  // costTrspAer       = parseFloat(var2);
+  listComissions.push({'var1':cAgent})
   costTrspAer       = parseFloat(document.getElementById('var2').value);
-  // costTrspTren      = parseFloat(var3);
+  listComissions.push({'var2':costTrspAer})
   costTrspTren      = parseFloat(document.getElementById('var3').value);
-  // costTrspFabAgent  = parseFloat(var4);
+  listComissions.push({'var3':costTrspTren})
   costTrspFabAgent  = parseFloat(document.getElementById('var4').value);
-  // tva               = parseFloat(var5);
+  listComissions.push({'var4':costTrspFabAgent})
   tva               = parseFloat(document.getElementById('var5').value);
-  // taxeVamale        = parseFloat(var6);
+  listComissions.push({'var5':tva})
   taxeVamale        = parseFloat(document.getElementById('var6').value);
-  // impozitProfit     = parseFloat(var7);
+  listComissions.push({'var6':taxeVamale})
   impozitProfit     = parseFloat(document.getElementById('var7').value);
-  // consImpProd       = parseFloat(var8);
+  listComissions.push({'var7':impozitProfit})
   consImpProd       = parseFloat(document.getElementById('var8').value);
-  // costTrspContr     = parseFloat(var9);
+  listComissions.push({'var8':consImpProd})
   costTrspContr     = parseFloat(document.getElementById('var9').value);
-  // costTrspFacClient = parseFloat(var10);
+  listComissions.push({'var9':costTrspContr})
   costTrspFacClient = parseFloat(document.getElementById('var10').value);
-  // cmsEmag           = parseFloat(var11);
+  listComissions.push({'var10':costTrspFacClient})
   cmsEmag           = parseFloat(document.getElementById('var11').value);
+  listComissions.push({'var11':cmsEmag})
+
 }
 
 document.getElementById("arrowBtn").addEventListener("click", showComissions)
 
 
 document.getElementById('scrapeButton').addEventListener('click', function() {
+    // start be resetting lists
+    initialize()
+
+    // check if alibaba website its open in current tab
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      const activeTab = tabs[0];
+      if (!activeTab.url.includes('alibaba.com')){
+        alert('Extensia este valabila doar pe site-ul www.alibaba.com')
+      }
+    });
     // Send a message to the background to scrape the price and packaging details
     chrome.runtime.sendMessage({ action: 'scrapePriceAndPackagingDetails' }, function(response) {
       const headingsDiv = document.getElementById('headings');
@@ -119,7 +135,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       const {calculComisionAgent, calculTransportFabAg} = costAchizitieChina();
 
       let showPrice = firstPrice
-
+      // calculate the china price including agent comission and the transport inside China from factory to agent
       firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
 
       // show the total costs
@@ -133,12 +149,12 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
         usdExchange = +usdExchange
       }
 
-      const priceDiv = document.getElementById('price')
-
+      // display the price which will be consider to be calculated
+      const priceDiv = document.createElement('p')
       priceDiv.innerHTML = `<strong>Pretul produsului luat in calcul: <span style="color: #850025;"> ${+showPrice} $ → ${(+showPrice*usdExchange).toFixed(2)} RON </span></strong>`
       showFinalCost_aer.innerHTML = `<strong>Cost Transport Aer: <span style="color: #850025;"> ${costFinalAch_Aer} $ → ${(costFinalAch_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
       showFinalCost_tren.innerHTML = `<strong>Cost Transport Tren: <span style="color: #850025;"> ${costFinalAch_Tren} $ → ${(costFinalAch_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
-
+      // add the p elements to div parent
       finalCostsDiv.append(priceDiv)
       finalCostsDiv.append(showFinalCost_aer);
       finalCostsDiv.append(showFinalCost_tren);
@@ -153,20 +169,18 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       document.getElementById("arrowBtnPrice").addEventListener('click', showPrefferedInput)
       document.getElementById('prefPriceBtn').addEventListener('click', showPrefferedPrices)
 
-      // Calcul Profit User Input
+      // Calculate Profit User Input
       const calculProfitDiv = document.getElementById('calculProfit')
       calculProfitDiv.style.display = 'block'
       let inputForm = document.getElementById('inputSellPrice')
       inputForm.style.display ='block'
+      
+      // setting up the buttons 
+      option.addEventListener('change', setOption)
       document.getElementById('arrowSellBtn').addEventListener('click', showCalculProfitInput)
       document.getElementById('profitButton').addEventListener('click', showProfit)
       document.getElementById('copylink').addEventListener('click', copyLink)
 
-      // if (arrowProfit) {      
-      //   addInputForm('arrowSellBtn', 'inputSellPrice', '.arrow-sell')
-      //   document.getElementById('profitButton').addEventListener('click', showProfit)
-      // }
-      
     });
   });
 
@@ -481,10 +495,8 @@ function getExchangeRate() {
 function processUSDRate() {
   getExchangeRate().then(usdValue => {
     if (usdValue) {
-      console.log("Cursul USD este:", usdValue);
       usdExchange = usdValue
     } else {
-      console.log("Nu s-a găsit cursul USD.");
     }
   }).catch(error => {
     console.log("Eroare:", error);
@@ -507,7 +519,7 @@ function addNewField(title, arrowBtnID, arrowClass) {
 
 function showPrefferedPrices(){
   let userPrice = document.getElementById('userPrice')
-  // let initialPrice = +firstPrice
+  
   firstPrice = parseFloat(userPrice.value).toFixed(2)
 
   
@@ -518,7 +530,7 @@ function showPrefferedPrices(){
   const {calculComisionAgent, calculTransportFabAg} = costAchizitieChina();
   firstPrice = +firstPrice * calculComisionAgent * calculTransportFabAg;
   
-  debugger
+  
   const preffCostAer = document.getElementById('newCost_Aer')
   const preffCostTren = document.getElementById('newCost_Tren')
   const newCalcFinalPret_Aer = costFinalAchAer()
@@ -531,8 +543,13 @@ function showPrefferedPrices(){
 }
 
 function showProfit(){
+  // check comissions before calculating
+  listComissions.forEach(checkComissionList)
+  messageMissingComissionValue()
+
   let priceEmag = document.getElementById('sellPrice')
-  let option = document.getElementById('options')
+  // let option = document.getElementById('options')
+
   const profitAer = cProfitFinal(option.value, +priceEmag.value, 'aer').toFixed(2)
   const profitTren = cProfitFinal(option.value, +priceEmag.value, 'tren').toFixed(2)
 
@@ -586,6 +603,7 @@ function showProfit(){
   
 }
 
+
 function copyLink() {
   // Copiază URL-ul paginii curente
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -598,6 +616,42 @@ function copyLink() {
       alert('Failed to copy URL: ' + error);
     });
   });
+}
+
+function checkComissionList(item){
+  // Filter for null or NaN elements
+  if (Object.values(item)[0] === null || isNaN(Object.values(item)[0])){
+    const key = Object.keys(item)[0]
+    nonValueArray.push(document.querySelector(`label[for="${key}"]`)?.innerText || `Label not found for id ${key}`)
+  }
+}
+
+function messageMissingComissionValue(){
+  if ( nonValueArray.length > 0 ){
+    let message = "Urmatoarele comisioane lipsesc: \n"
+    for (let x of nonValueArray){
+      message += '- ' + x +' '
+    }
+    message += "\n\n Pentru un calcul cat mai precis introdu corect valorile comisioanelor de mai sus"
+    alert(message)
+    nonValueArray = []
+  }
+}
+
+function initialize(){
+  listComissions = []
+  nonValueArray = []
+}
+
+function saveOption(){
+  const savedOption = localStorage.getItem('selectedOption');
+  if (savedOption){
+    option.value = savedOption
+  }
+}
+
+function setOption(){
+  localStorage.setItem('selectedOption', option.value)
 }
 
 document.getElementById('find-product').addEventListener("click", function() {

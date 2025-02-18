@@ -29,7 +29,7 @@ function scrapePriceAndPackagingDetails() {
         // Based on the text in the left div, we can store this information accordingly
         if (leftElement.innerText.includes('Single package size:')) {
           data.packagingDetails.singlePackageSize = rightText;
-        } else if (leftElement.innerText.includes('gross weight:')) {
+        } else if (leftElement.innerText.includes('gross weight:') || leftElement.innerText.includes('Weight')) {
           data.packagingDetails.grossWeight = rightText;
         } else if (leftElement.innerText.includes('Net weight:')) {
           data.packagingDetails.netWeight = rightText;
@@ -45,8 +45,7 @@ function scrapePriceAndPackagingDetails() {
             transportCalc = transportCalc.replace(" cm", "");
             transportCalc = transportCalc.replace(/X/g, "*");
             transportCalc += "/5000";
-            // console.log('math', eval(transportCalc))
-            // let volumetricSize = roundTransportNumber(eval(transportCalc));
+
             let volumetricSize = eval(transportCalc).toFixed(3);
             data.volumetricCalc = volumetricSize;
         }
@@ -123,7 +122,7 @@ function findImage(){
         }
 
         // Construct the Google Lens URL and open it in a new tab
-        const googleLensUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}`;
+        const googleLensUrl = `https://lens.google.ro/uploadbyurl?url=${encodeURIComponent(imageUrl)}`;
         window.open(googleLensUrl, "_blank");
     } else {
         alert("Nu s-au gasit imagini pe aceasta pagina.");
