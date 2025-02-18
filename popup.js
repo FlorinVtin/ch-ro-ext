@@ -1,6 +1,3 @@
-import { loadVariables }  from './comission.js';
-// import { saveComissions } from './comission.js';
-
 let cAgent            = undefined;
 let costTrspAer       = undefined;
 let costTrspTren      = undefined;
@@ -51,25 +48,36 @@ function checkComissions(){
 
 }
 
-document.getElementById("arrowBtn").addEventListener("click", showComissions)
-
+document.getElementById("arrowBtn").addEventListener("click", (showComissions))
 
 document.getElementById('scrapeButton').addEventListener('click', function() {
-    // start be resetting lists
-    initialize()
-
-    // check if alibaba website its open in current tab
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-      const activeTab = tabs[0];
-      if (!activeTab.url.includes('alibaba.com')){
-        alert('Extensia este valabila doar pe site-ul www.alibaba.com')
+  initialize()
+  
+  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    const activeTab = tabs[0];
+    if (!activeTab.url.includes('alibaba.com')){
+      alert('Extensia este valabila doar pe site-ul www.alibaba.com')
+      return
+    }
+  });
+  // Trimite un mesaj către background.js pentru a executa scriptul de conținut
+  chrome.runtime.sendMessage({ action: 'scrapePriceAndPackagingDetails' }, function(response) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError.message);
+      } 
+      else {
+        console.log(response);
       }
-    });
-    // Send a message to the background to scrape the price and packaging details
-    chrome.runtime.sendMessage({ action: 'scrapePriceAndPackagingDetails' }, function(response) {
       const headingsDiv = document.getElementById('headings');
       headingsDiv.innerHTML = ''; // Clear previous results
 
+      // Display the volumetric weight if available
+      const transportCostDiv = document.createElement('div');
+      const transportCostTitle = document.createElement('h4');
+      transportCostTitle.textContent = 'Marime si greutate per buc.';
+      transportCostDiv.appendChild(transportCostTitle);
+
+      console.log('response: ', response)
       let calculVolumetric = null
       if (response.volumetricCalc){
         calculVolumetric = roundVolumetricSize(response.volumetricCalc)
@@ -89,13 +97,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
         transportWeight = response.grossWeight;
       } else {
         transportWeight = 'No data found about size or weigth package!'
-      }
-
-      // Display the volumetric weight if available
-      const transportCostDiv = document.createElement('div');
-      const transportCostTitle = document.createElement('h4');
-      transportCostTitle.textContent = 'Marime si greutate per buc.';
-      transportCostDiv.appendChild(transportCostTitle);
+      }      
 
       // show calculation for volumetric weigth 
       const volumetricValue = document.createElement('p');
@@ -151,9 +153,9 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
 
       // display the price which will be consider to be calculated
       const priceDiv = document.createElement('p')
-      priceDiv.innerHTML = `<strong>Pretul produsului luat in calcul: <span style="color: #850025;"> ${+showPrice} $ → ${(+showPrice*usdExchange).toFixed(2)} RON </span></strong>`
-      showFinalCost_aer.innerHTML = `<strong>Cost Transport Aer: <span style="color: #850025;"> ${costFinalAch_Aer} $ → ${(costFinalAch_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
-      showFinalCost_tren.innerHTML = `<strong>Cost Transport Tren: <span style="color: #850025;"> ${costFinalAch_Tren} $ → ${(costFinalAch_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
+      priceDiv.innerHTML = `<strong>Pretul produsului luat in calcul: <span style="color: #850025;"> ${+showPrice} $ <i class="fa-solid fa-arrow-right"></i> ${(+showPrice*usdExchange).toFixed(2)} RON </span></strong>`
+      showFinalCost_aer.innerHTML = `<strong>Cost Transport Aer: <span style="color: #850025;"> ${costFinalAch_Aer} $ <i class="fa-solid fa-arrow-right"></i> ${(costFinalAch_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
+      showFinalCost_tren.innerHTML = `<strong>Cost Transport Tren: <span style="color: #850025;"> ${costFinalAch_Tren} $ <i class="fa-solid fa-arrow-right"></i> ${(costFinalAch_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
       // add the p elements to div parent
       finalCostsDiv.append(priceDiv)
       finalCostsDiv.append(showFinalCost_aer);
@@ -180,7 +182,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       document.getElementById('arrowSellBtn').addEventListener('click', showCalculProfitInput)
       document.getElementById('profitButton').addEventListener('click', showProfit)
       document.getElementById('copylink').addEventListener('click', copyLink)
-
+      document.getElementById('title').addEventListener('click', copyTitle)
     });
   });
 
@@ -421,11 +423,12 @@ function showPrefferedInput() {
   let arrow = document.querySelector('.arrow-preffered');
   if (inputForm.style.display === "none" || inputForm.style.display === "") {
       inputForm.style.display = "block";
-      // arrow.classList.remove("rotate");
-      arrow.classList.toggle("rotate")
+      arrow.style.transform = 'rotate(180deg)'
+
   } else {
       inputForm.style.display = "none";
-      arrow.classList.toggle("rotate")
+      arrow.style.transform = 'rotate(0deg)'
+
   }
 
 }
@@ -436,10 +439,13 @@ function showCalculProfitInput(){
   if (inputForm.style.display === "none" || inputForm.style.display === "") {
       inputForm.style.display = "block";
       // arrow.classList.remove("rotate");
-      arrow.classList.toggle("rotate")
+      // arrow.classList.toggle("rotate")
+      arrow.style.transform = 'rotate(0deg)'
   } else {
       inputForm.style.display = "none";
-      arrow.classList.toggle("rotate")
+      // arrow.classList.toggle("rotate")
+      arrow.style.transform = 'rotate(180deg)'
+
   }
 }
 
@@ -448,15 +454,10 @@ function showComissions(){
   let arrow = document.querySelectorAll('.arrow-comission');
   if (inputForm.style.display === "none" || inputForm.style.display === "") {
       inputForm.style.display = "block";
-      // arrow.classList.remove("rotate");
-      arrow.classList.toggle("rotate")
+      arrow.style.transform = 'rotate(180deg)'
   } else {
       inputForm.style.display = "none";
-      arrow.classList.toggle("rotate")
-
-      // arrow.classList.add("rotate");
-      // arrow.classList.remove("rotate");
-
+      arrow.style.transform = 'rotate(0deg)'
   }
 }
 
@@ -535,8 +536,8 @@ function showPrefferedPrices(){
   const preffCostTren = document.getElementById('newCost_Tren')
   const newCalcFinalPret_Aer = costFinalAchAer()
   const newCalcFinalPret_Tren = costFinalAchTren()
-  preffCostAer.innerHTML = `<strong>NOU* Cost Transport Aer: <span style="color: #850025;"> ${newCalcFinalPret_Aer} $ → ${(newCalcFinalPret_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
-  preffCostTren.innerHTML = `<strong>NOU* Cost Transport Tren: <span style="color: #850025;"> ${newCalcFinalPret_Tren} $ → ${(newCalcFinalPret_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
+  preffCostAer.innerHTML = `<strong>NOU* Cost Transport Aer: <span style="color: #850025;"> ${newCalcFinalPret_Aer} $ <i class="fa-solid fa-arrow-right"></i> ${(newCalcFinalPret_Aer * usdExchange).toFixed(2)} RON </span></strong>`;
+  preffCostTren.innerHTML = `<strong>NOU* Cost Transport Tren: <span style="color: #850025;"> ${newCalcFinalPret_Tren} $ <i class="fa-solid fa-arrow-right"></i>  ${(newCalcFinalPret_Tren * usdExchange).toFixed(2)} RON </span></strong>`;
             
   preffCostAer.style.display = 'block'
   preffCostTren.style.display = 'block'
@@ -618,6 +619,24 @@ function copyLink() {
   });
 }
 
+function copyTitle() {
+  // Copy name of product
+  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    const activeTab = tabs[0];
+    title = activeTab.title
+    if (title.includes('on Alibaba.com')){
+      title = title.replace('on Alibaba.com', '')
+    }
+    // const tabUrl = activeTab.url;
+    // console.log("Active Tab URL:", tabUrl);
+    navigator.clipboard.writeText(title).then(function() {
+      alert('Title copied to clipboard!');
+    }).catch(function(error) {
+      alert('Failed to copy title: ' + error);
+    });
+  });
+}
+
 function checkComissionList(item){
   // Filter for null or NaN elements
   if (Object.values(item)[0] === null || isNaN(Object.values(item)[0])){
@@ -654,18 +673,73 @@ function setOption(){
   localStorage.setItem('selectedOption', option.value)
 }
 
+
+function findImage(){
+  try {
+    let images;
+    // console.log('Hostname' + window.location.hostname);
+    // Check for the website's hostname and choose the appropriate image selector
+    if (window.location.hostname.includes("tmall.com")) {
+        // Selector pentru Tmall
+        const mainImage = document.querySelector("div.mainPicWrap--Ns5WQiHr img");
+        if (mainImage) {
+            images = [mainImage];
+        }
+    } else if (window.location.hostname.includes("alibaba.com")) {             
+        // Selector pentru Alibaba
+        images = document.querySelectorAll("img.id-h-full.id-w-full.id-object-contain");
+    } else if (window.location.hostname.includes("1688.com")) {
+        // Selector pentru 1688
+        images = document.querySelectorAll("img.detail-gallery-img");
+    } else if (window.location.hostname.includes("amazon.com")) {
+        // Selector pentru Amazon
+        const mainImage = document.querySelector("#imgTagWrapperId img");
+        if (mainImage) {
+            images = [mainImage];
+        }
+    }
+
+    // If we found images, process the first one
+    if (images && images.length > 0) {
+        let imageUrl = images[0].getAttribute("src");
+
+        // If the image URL is relative, make it absolute
+        if (imageUrl && imageUrl.startsWith("//")) {
+            imageUrl = "https:" + imageUrl;
+        }
+
+        // For Amazon, clean the URL (remove any query params)
+        if (window.location.hostname.includes("amazon.com")) {
+            imageUrl = imageUrl.split("?")[0]; // Remove anything after the "?"
+        }
+
+        // Construct the Google Lens URL and open it in a new tab
+        const googleLensUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}`;
+        window.open(googleLensUrl, "_blank");
+    } else {
+        alert("Nu s-au gasit imagini pe aceasta pagina.");
+    }
+  } catch (error) {
+      console.error("Eroare la procesarea imaginii principale:", error);
+      alert("A aparut o problema la procesarea imaginii principale.");
+  }
+    
+    
+};
+
 document.getElementById('find-product').addEventListener("click", function() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     const activeTab = tabs[0];
-    // const tabUrl = activeTab.url;
-    // console.log("Active Tab URL:", tabUrl);
-
+    
     // Injectează funcția findImage în tab-ul activ
-    chrome.tabs.executeScript(activeTab.id, {
-      code: 'findImage()'  // Execută funcția findImage în contextul paginii
+    chrome.scripting.executeScript({
+      target: { tabId: activeTab.id },
+      // files: ['content.js'],
+      func: findImage  // Apelarea funcției direct
     });
   });
 });
+
 
 
 

@@ -44,10 +44,16 @@ function scrapePriceAndPackagingDetails() {
             let transportCalc = data.packagingDetails.singlePackageSize;
             transportCalc = transportCalc.replace(" cm", "");
             transportCalc = transportCalc.replace(/X/g, "*");
-            transportCalc += "/5000";
+            // transportCalc += "/5000";
+            transportCalc = transportCalc.split('*')
+            transportCalc = (calculateTransport(transportCalc)/5000).toFixed(3)
 
-            let volumetricSize = eval(transportCalc).toFixed(3);
-            data.volumetricCalc = volumetricSize;
+            
+            // console.log('transportCalc', transportCalc)
+            // console.log('type', typeof(transportCalc))
+
+            // let volumetricSize = (+transportCalc/5000).toFixed(3);
+            data.volumetricCalc = transportCalc;
         }
 
         // calculate the weight based on gross weight
@@ -62,6 +68,14 @@ function scrapePriceAndPackagingDetails() {
     
   
     return data;
+  }
+
+  function calculateTransport(list){
+    let x = 1;
+    for (let y of list){
+      x *= y
+    }
+    return x
   }
 
   function roundTransportNumber(number){
@@ -81,59 +95,6 @@ function scrapePriceAndPackagingDetails() {
   }
 
 
-function findImage(){
-  
-  try {
-    let images;
-    // console.log('Hostname' + window.location.hostname);
-    // Check for the website's hostname and choose the appropriate image selector
-    if (window.location.hostname.includes("tmall.com")) {
-        // Selector pentru Tmall
-        const mainImage = document.querySelector("div.mainPicWrap--Ns5WQiHr img");
-        if (mainImage) {
-            images = [mainImage];
-        }
-    } else if (window.location.hostname.includes("alibaba.com")) {             
-        // Selector pentru Alibaba
-        images = document.querySelectorAll("img.id-h-full.id-w-full.id-object-contain");
-    } else if (window.location.hostname.includes("1688.com")) {
-        // Selector pentru 1688
-        images = document.querySelectorAll("img.detail-gallery-img");
-    } else if (window.location.hostname.includes("amazon.com")) {
-        // Selector pentru Amazon
-        const mainImage = document.querySelector("#imgTagWrapperId img");
-        if (mainImage) {
-            images = [mainImage];
-        }
-    }
-
-    // If we found images, process the first one
-    if (images && images.length > 0) {
-        let imageUrl = images[0].getAttribute("src");
-
-        // If the image URL is relative, make it absolute
-        if (imageUrl && imageUrl.startsWith("//")) {
-            imageUrl = "https:" + imageUrl;
-        }
-
-        // For Amazon, clean the URL (remove any query params)
-        if (window.location.hostname.includes("amazon.com")) {
-            imageUrl = imageUrl.split("?")[0]; // Remove anything after the "?"
-        }
-
-        // Construct the Google Lens URL and open it in a new tab
-        const googleLensUrl = `https://lens.google.ro/uploadbyurl?url=${encodeURIComponent(imageUrl)}`;
-        window.open(googleLensUrl, "_blank");
-    } else {
-        alert("Nu s-au gasit imagini pe aceasta pagina.");
-    }
-  } catch (error) {
-      console.error("Eroare la procesarea imaginii principale:", error);
-      alert("A aparut o problema la procesarea imaginii principale.");
-  }
-    
-    
-};
   // Run the function and return the data
   scrapePriceAndPackagingDetails();
 
