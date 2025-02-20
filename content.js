@@ -6,13 +6,28 @@ function scrapePriceAndPackagingDetails() {
       volumetricCalc: '',
       grossWeight: ''
     };
+
+    // scrapping the principal div element of price's
+    let priceDiv = document.querySelector('.price-list')
+
+    if (!priceDiv) {
+      priceDiv = document.querySelector('.price-range')
+    }
+
   
     // Scrape pricing details as before
-    const priceItems = document.querySelector('.price');
+    let priceItems = priceDiv.querySelector('.price');
+
+    if (!priceItems) {
+      priceItems = priceDiv.querySelector('span')
+    }
     let priceText = priceItems.innerText.trim().replace('$', '');
     if ( priceText ){
       if (priceText.includes('-')){
         priceText = priceText.split('-')[0]
+      }
+      else if (priceText.includes('\n')){
+        priceText = priceText.split('\n')[0]
       }
     }
     data.priceDetails.push(priceText);

@@ -60,7 +60,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       return
     }
   });
-  // Trimite un mesaj către background.js pentru a executa scriptul de conținut
+  // Sent to background js to run the following script
   chrome.runtime.sendMessage({ action: 'scrapePriceAndPackagingDetails' }, function(response) {
       if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);
@@ -96,7 +96,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       } else if (!calculVolumetric && response.grossWeight){
         transportWeight = response.grossWeight;
       } else {
-        transportWeight = 'No data found about size or weigth package!'
+        transportWeight = 'Nu au fost gasit date despre marime, greutate!'
       }      
 
       // show calculation for volumetric weigth 
