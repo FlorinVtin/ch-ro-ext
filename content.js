@@ -4,8 +4,13 @@ function scrapePriceAndPackagingDetails() {
       priceDetails: [],
       packagingDetails: {},
       volumetricCalc: '',
-      grossWeight: ''
+      grossWeight: '',
+      title: ''
     };
+
+    // getting the product title
+    let title = document.querySelector('h1').innerText
+    data.title = title
 
     // scrapping the principal div element of price's
     let priceDiv = document.querySelector('.price-list')

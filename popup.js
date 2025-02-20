@@ -20,6 +20,7 @@ let usdExchange = undefined;
 let initialPrice = undefined
 let listComissions = []
 let nonValueArray = []
+let title = ''
 
 
 function checkComissions(){
@@ -62,6 +63,8 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
   });
   // Sent to background js to run the following script
   chrome.runtime.sendMessage({ action: 'scrapePriceAndPackagingDetails' }, function(response) {
+      title = response.title
+
       if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);
       } 
@@ -621,19 +624,25 @@ function copyLink() {
 
 function copyTitle() {
   // Copy name of product
-  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-    const activeTab = tabs[0];
-    title = activeTab.title
-    if (title.includes('on Alibaba.com')){
-      title = title.replace('on Alibaba.com', '')
-    }
-    // const tabUrl = activeTab.url;
-    // console.log("Active Tab URL:", tabUrl);
-    navigator.clipboard.writeText(title).then(function() {
-      alert('Title copied to clipboard!');
-    }).catch(function(error) {
-      alert('Failed to copy title: ' + error);
-    });
+  // chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+  //   const activeTab = tabs[0];
+  //   title = activeTab.title
+  //   if (title.includes('on Alibaba.com')){
+  //     title = title.replace('on Alibaba.com', '')
+  //   }
+  //   // const tabUrl = activeTab.url;
+  //   // console.log("Active Tab URL:", tabUrl);
+  //   navigator.clipboard.writeText(title).then(function() {
+  //     alert('Title copied to clipboard!');
+  //   }).catch(function(error) {
+  //     alert('Failed to copy title: ' + error);
+  //   });
+  // });
+  
+  navigator.clipboard.writeText(title).then(function() {
+    alert('Title copied to clipboard!');
+  }).catch(function(error) {
+    alert('Failed to copy title: ' + error);
   });
 }
 
