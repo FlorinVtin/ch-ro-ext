@@ -615,35 +615,39 @@ function copyLink() {
     // const tabUrl = activeTab.url;
     // console.log("Active Tab URL:", tabUrl);
     navigator.clipboard.writeText(activeTab.url).then(function() {
-      alert('URL copied to clipboard!');
+      showCopyMessage('URL copied to clipboard!');
     }).catch(function(error) {
-      alert('Failed to copy URL: ' + error);
+      showCopyMessage('Failed to copy URL: ' + error, true);
     });
   });
 }
 
 function copyTitle() {
-  // Copy name of product
-  // chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-  //   const activeTab = tabs[0];
-  //   title = activeTab.title
-  //   if (title.includes('on Alibaba.com')){
-  //     title = title.replace('on Alibaba.com', '')
-  //   }
-  //   // const tabUrl = activeTab.url;
-  //   // console.log("Active Tab URL:", tabUrl);
-  //   navigator.clipboard.writeText(title).then(function() {
-  //     alert('Title copied to clipboard!');
-  //   }).catch(function(error) {
-  //     alert('Failed to copy title: ' + error);
-  //   });
-  // });
   
   navigator.clipboard.writeText(title).then(function() {
-    alert('Title copied to clipboard!');
+    showCopyMessage('Title copied to clipboard!');
   }).catch(function(error) {
-    alert('Failed to copy title: ' + error);
+    showCopyMessage('Failed to copy title: ' + error);
   });
+}
+
+function showCopyMessage(message, isError = false) {
+  let msgBox = document.createElement('div');
+  msgBox.textContent = message;
+  msgBox.style.position = 'fixed';
+  msgBox.style.bottom = '20px';
+  msgBox.style.right = '20px';
+  msgBox.style.backgroundColor = isError ? '#ff4d4d' : '#4CAF50';
+  msgBox.style.color = 'white';
+  msgBox.style.padding = '10px 15px';
+  msgBox.style.borderRadius = '5px';
+  msgBox.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
+  msgBox.style.zIndex = '1000';
+  document.body.appendChild(msgBox);
+
+  setTimeout(() => {
+      msgBox.remove();
+  }, 3000);
 }
 
 function checkComissionList(item){
