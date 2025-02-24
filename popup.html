@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/mvp.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Import China-Ro</title>
     <style>
@@ -120,6 +121,13 @@
   
   </head>
   <body>
+
+     
+      <p id="userPaid" class="hidden" style="font-size: 1.4rem;">Are you registered?</p>
+      <button id="pay" class="hidden" style="width: 200px;">Proceed</button>
+      <script src="ExtPay.js"></script>
+  
+
     <!-- Secțiunea pentru rezultate -->
     <div id="headings"></div>
     <div id="prefferedPriceDiv" class="hidden">
@@ -178,11 +186,11 @@
     <!-- --------------------------------------- -->
     <div id="headings"></div>
 
-    <button id="scrapeButton" class="button-orange">Calculeaza pret achizitie China</button>
+    <button id="scrapeButton" class="button-orange hidden">Calculeaza pret achizitie China</button>
     <div id="headings"></div>
     <!-- <script src="popup.js" type="module"></script> -->
 
-    <button id="find-product"><i class="fa-solid fa-camera"></i> Cauta produs dupa imagine</button>
+    <button id="find-product" class="hidden"><i class="fa-solid fa-camera"></i> Cauta produs dupa imagine</button>
     <div id="headings"></div>
     <!-- <script src="popup.js" type="module"></script> -->
 
@@ -191,12 +199,12 @@
       <iframe style="width: 200px; height: 95px;" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" src="https://www.cursbnr.ro/insert/cursvalutar.php?w=200&b=f7f7f7&bl=dcdcdc&ttc=0a6eab&tc=000000&diff=1&ron=1&cb=1&pics=1"></iframe>
     </div>
 
-    <!-- Formular pentru variabilele de tip float -->
+    <!-- Input form for comissions -->
     
     <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow-comission"></i></span></h3>
 
 
-    <div id="inputForm">
+    <div id="inputForm" class="hidden">
 
       <label for="var1">Comision agent %:</label>
       <input type="number" id="var1" step="any" placeholder="Numar procentual %" required>
@@ -234,7 +242,8 @@
       <input type="number" id="var11" step="any" placeholder="Numar procentual" required>
       
       
-      <button id="saveButton">Salveaza comisioanele</button>
+      <button id="saveButton" class="hidden">Salveaza comisioanele</button>
+      <br>
       <script src="comission.js" type="module"></script>
      
       <script src="popup.js"></script>

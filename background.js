@@ -1,3 +1,12 @@
+// background.js
+importScripts('ExtPay.js')
+
+chrome.storage.local.get('foo', function() {
+  const extpay = ExtPay('calculator-profit-import-china-romania')
+  extpay.startBackground();
+  // ...
+})
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === 'scrapePriceAndPackagingDetails') {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {

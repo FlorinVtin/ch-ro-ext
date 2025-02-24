@@ -22,6 +22,56 @@ let listComissions = []
 let nonValueArray = []
 let title = ''
 
+const extpay = ExtPay('calculator-profit-import-china-romania')
+
+document.getElementById('pay').addEventListener('click', extpay.openPaymentPage)
+
+foo()
+
+async function foo() {
+  const user = await extpay.getUser();
+  if (user.paid) {
+    document.getElementById('pay').remove()
+    document.getElementById('userPaid').remove()
+
+    document.getElementById('scrapeButton').style.display = 'block'
+    document.getElementById('find-product').style.display = 'block'
+    document.getElementById('saveButton').style.display = 'block'
+    // document.getElementById('inputForm').style.display = 'none'
+
+    // for testing purpouse
+    const subscriptionDiv = document.createElement('div')
+    document.getElementById('inputForm').appendChild(subscriptionDiv)
+    const checkSubscriptionBtn = document.createElement('BUTTON')
+    checkSubscriptionBtn.innerHTML = 'Check your subscription'
+    checkSubscriptionBtn.id = 'checkSubscription'
+    checkSubscriptionBtn.style.background = 'green'
+    subscriptionDiv.appendChild(checkSubscriptionBtn)
+    checkSubscriptionBtn.addEventListener('click', function(){
+      extpay.openPaymentPage()
+    })
+
+
+
+  } 
+  else {
+    document.getElementById('scrapeButton').remove()
+    document.getElementById('find-product').remove()
+    document.getElementById('saveButton').remove()
+    document.getElementById('inputForm').remove()
+
+    document.getElementById('userPaid').style.display = 'block'
+    document.getElementById('pay').style.display = 'block'
+  }
+}
+// extpay.getUser().then(user => {
+//   if (user.paid) {
+
+//   } else {
+      
+//     // extpay.openPaymentPage()
+//   }
+// })
 
 function checkComissions(){
   cAgent            = parseFloat(document.getElementById('var1').value);
@@ -51,7 +101,9 @@ function checkComissions(){
 
 document.getElementById("arrowBtn").addEventListener("click", (showComissions))
 
-document.getElementById('scrapeButton').addEventListener('click', function() {
+document.getElementById('scrapeButton').addEventListener('click', scrape)
+
+function scrape() {
   initialize()
   
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -187,7 +239,7 @@ document.getElementById('scrapeButton').addEventListener('click', function() {
       document.getElementById('copylink').addEventListener('click', copyLink)
       document.getElementById('title').addEventListener('click', copyTitle)
     });
-  });
+  };
 
   function roundVolumetricSize(volumNumber){
     return Math.ceil(volumNumber*10)/10
