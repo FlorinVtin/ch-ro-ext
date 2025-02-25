@@ -1,10 +1,12 @@
 {
-  "name": "Calculator CHN-RO",
+  "name": "Calculator profit CHN-RO",
   "version": "1.0",
   "manifest_version": 3,
-  "description": "Calculator pentru profitabilitate import China-Romania.",
+  "description": "Calculator profit import China-Romania",
   "icons": {
-    "48": "icon.png"
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
   },
   "background": {
     "service_worker": "background.js"

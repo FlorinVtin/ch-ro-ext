@@ -24,54 +24,60 @@ let title = ''
 
 const extpay = ExtPay('calculator-profit-import-china-romania')
 
+document.getElementById('trial').addEventListener('click', extpay.openTrialPage)
 document.getElementById('pay').addEventListener('click', extpay.openPaymentPage)
 
 foo()
 
 async function foo() {
   const user = await extpay.getUser();
-  if (user.paid) {
-    document.getElementById('pay').remove()
-    document.getElementById('userPaid').remove()
-
-    document.getElementById('scrapeButton').style.display = 'block'
-    document.getElementById('find-product').style.display = 'block'
-    document.getElementById('saveButton').style.display = 'block'
-    // document.getElementById('inputForm').style.display = 'none'
-
-    // for testing purpouse
-    const subscriptionDiv = document.createElement('div')
-    document.getElementById('inputForm').appendChild(subscriptionDiv)
-    const checkSubscriptionBtn = document.createElement('BUTTON')
-    checkSubscriptionBtn.innerHTML = 'Check your subscription'
-    checkSubscriptionBtn.id = 'checkSubscription'
-    checkSubscriptionBtn.style.background = 'green'
-    subscriptionDiv.appendChild(checkSubscriptionBtn)
-    checkSubscriptionBtn.addEventListener('click', function(){
-      extpay.openPaymentPage()
-    })
-
-
-
-  } 
-  else {
-    document.getElementById('scrapeButton').remove()
-    document.getElementById('find-product').remove()
-    document.getElementById('saveButton').remove()
-    document.getElementById('inputForm').remove()
-
-    document.getElementById('userPaid').style.display = 'block'
-    document.getElementById('pay').style.display = 'block'
-  }
-}
-// extpay.getUser().then(user => {
-//   if (user.paid) {
-
-//   } else {
+  const now = new Date();
+    const sevenDays = 1000*60*60*24*1 // in milliseconds
+    if (user.trialStartedAt && (now - user.trialStartedAt) < sevenDays) {
+        // user's trial is active
+        document.getElementById('pay').remove()
+        document.getElementById('userPaid').remove()
+        document.getElementById('trial').remove()
+        document.getElementById('subscriptionHeader').remove()
+    
+        document.getElementById('scrapeButton').style.display = 'block'
+        document.getElementById('find-product').style.display = 'block'
+        document.getElementById('saveButton').style.display = 'block'
+    } else {
+        // user's trial is not active
+        if (user.paid) {
+          document.getElementById('pay').remove()
+          document.getElementById('userPaid').remove()
       
-//     // extpay.openPaymentPage()
-//   }
-// })
+          document.getElementById('scrapeButton').style.display = 'block'
+          document.getElementById('find-product').style.display = 'block'
+          document.getElementById('saveButton').style.display = 'block'
+          // document.getElementById('inputForm').style.display = 'none'
+      
+          // for testing purpouse
+          // const subscriptionDiv = document.createElement('div')
+          // document.getElementById('inputForm').appendChild(subscriptionDiv)
+          // const checkSubscriptionBtn = document.createElement('BUTTON')
+          // checkSubscriptionBtn.innerHTML = 'Check your subscription'
+          // checkSubscriptionBtn.id = 'checkSubscription'
+          // checkSubscriptionBtn.style.background = 'green'
+          // subscriptionDiv.appendChild(checkSubscriptionBtn)
+          // checkSubscriptionBtn.addEventListener('click', function(){
+          //   extpay.openPaymentPage()
+          // })
+        } 
+        else {
+          document.getElementById('scrapeButton').remove()
+          document.getElementById('find-product').remove()
+          document.getElementById('saveButton').remove()
+          document.getElementById('inputForm').remove()
+      
+          document.getElementById('userPaid').style.display = 'block'
+          document.getElementById('pay').style.display = 'block'
+        }
+    }
+
+}
 
 function checkComissions(){
   cAgent            = parseFloat(document.getElementById('var1').value);
