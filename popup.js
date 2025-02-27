@@ -34,11 +34,11 @@ foo()
 async function foo() {
 
   const user = await extpay.getUser();
-  console.log('Trial period started', user.trialStartedAt)
+  // console.log('Trial period started', user.trialStartedAt)
 
     const sevenDays = 1000*60*60*24*1 // in milliseconds
     const now = new Date();
-    console.log('Remaining period', (now - user.trialStartedAt) < sevenDays)
+    // console.log('Remaining period', (now - user.trialStartedAt) < sevenDays)
     if (user.trialStartedAt && (now - user.trialStartedAt) < sevenDays) {
         // user's trial is active
         document.getElementById('pay').remove()
@@ -49,22 +49,7 @@ async function foo() {
     } 
     else {
         // user's trial is not active
-        // document.getElementById('scrapeButton').remove()
-        // document.getElementById('find-product').remove()
-        // document.getElementById('saveButton').remove()
-        // document.getElementById('inputForm').remove()
         trialEnd = true
-      
-        // document.getElementById('subscriptionHeader').innerHTML = 'Log In'
-        // document.getElementById('subscriptionHeader').style.display = 'block'
-        // document.getElementById('trial').innerHTML = 'Sign In'
-        // document.getElementById('trial').style.display = 'block'
-        // document.getElementById('trial').addEventListener('click', extpay.openLoginPage)
-        // openLoginPage
-        // document.getElementById('trial').remove()      
-        // document.getElementById('subscriptionHeader').innerHTML = 'Are you registered?'
-        // document.getElementById('subscriptionHeader').style.display = 'block'
-        // document.getElementById('pay').style.display = 'block'
     }
     if (trialEnd){
       const trialBtn = document.getElementById('trial')
@@ -76,9 +61,6 @@ async function foo() {
         // remove trial & pay buttons
         document.getElementById('pay').remove()
         document.getElementById('trial').remove()
-        // document.getElementById('login').remove()
-        // document.getElementById('subscriptionHeader').remove()          
-        // show extension functions 
         document.getElementById('scrapeButton').style.display = 'block'
         document.getElementById('find-product').style.display = 'block'
         document.getElementById('saveButton').style.display = 'block'  
@@ -96,34 +78,31 @@ async function foo() {
         })
       } 
       else if (user.paid && user.subscriptionCancelAt) {
-        console.log("Your subscription will end at the next billing cycle")
+        // console.log("Your subscription will end at the next billing cycle")
         document.getElementById('subscriptionHeader').innerHTML = 'Your subscription will end at the next billing cycle'
 
       } 
       else if (user.subscriptionStatus === 'past_due') {
-        console.log("You need to update your card!");
+        // console.log("You need to update your card!");
         document.getElementById('subscriptionHeader').innerHTML = 'You need to update your card!'
         extpay.openPaymentPage();
       } 
       else if (user.subscriptionStatus === 'canceled') {
-        console.log("We hope you enjoyed your subscription!")
+        // console.log("We hope you enjoyed your subscription!")
+        document.getElementById('subscriptionHeader').innerHTML = 'We hope you enjoyed your subscription!'
         document.getElementById('scrapeButton').remove()
         document.getElementById('find-product').remove()
         document.getElementById('saveButton').remove()
         document.getElementById('inputForm').remove()
         document.getElementById('pay').style.display = 'block'
-        // document.getElementById('login').style.display = 'block'
     } 
       else {
         document.getElementById('scrapeButton').remove()
         document.getElementById('find-product').remove()
         document.getElementById('saveButton').remove()
         document.getElementById('inputForm').remove()
-        // document.getElementById('trial').remove()      
-        // document.getElementById('subscriptionHeader').innerHTML = 'Are you registered?'
-        // document.getElementById('subscriptionHeader').style.display = 'block'
         document.getElementById('pay').style.display = 'block'
-        // document.getElementById('login').style.display = 'block'
+
       }
     }
 }
@@ -187,12 +166,12 @@ function scrape() {
       transportCostTitle.textContent = 'Marime si greutate per buc.';
       transportCostDiv.appendChild(transportCostTitle);
 
-      console.log('response: ', response)
+   
       let calculVolumetric = null
       if (response.volumetricCalc){
         calculVolumetric = roundVolumetricSize(response.volumetricCalc)
       } 
-      console.log(response.volumetricCalc)
+      
       // establishing the weigth value
       if (calculVolumetric && response.grossWeight){
 
@@ -589,15 +568,15 @@ function getExchangeRate() {
 
       if (usdElement) {
         const usdRate = usdElement.textContent; // extract the USD rate
-        console.log("Cursul USD:", usdRate);
+        // console.log("Cursul USD:", usdRate);
         return usdRate;  // return the USD rate
       } else {
-        console.log("Cursul USD nu a fost gasit.");
+        // console.log("Cursul USD nu a fost gasit.");
         return null;  // return null in case of missing rate
       }
     })
     .catch(error => {
-      console.error('A aparut o eroare:', error);
+      // console.error('A aparut o eroare:', error);
       return null;  // return error in case of something is wrong
     });
 }
