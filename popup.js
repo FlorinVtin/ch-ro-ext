@@ -21,62 +21,111 @@ let initialPrice = undefined
 let listComissions = []
 let nonValueArray = []
 let title = ''
+let trialEnd = false
 
 const extpay = ExtPay('calculator-profit-import-china-romania')
 
 document.getElementById('trial').addEventListener('click', extpay.openTrialPage)
 document.getElementById('pay').addEventListener('click', extpay.openPaymentPage)
+// document.getElementById('login').addEventListener('click', extpay.openLoginPage)
 
 foo()
 
 async function foo() {
+
   const user = await extpay.getUser();
-  const now = new Date();
+  console.log('Trial period started', user.trialStartedAt)
+
     const sevenDays = 1000*60*60*24*1 // in milliseconds
+    const now = new Date();
+    console.log('Remaining period', (now - user.trialStartedAt) < sevenDays)
     if (user.trialStartedAt && (now - user.trialStartedAt) < sevenDays) {
         // user's trial is active
         document.getElementById('pay').remove()
-        document.getElementById('userPaid').remove()
         document.getElementById('trial').remove()
-        document.getElementById('subscriptionHeader').remove()
-    
         document.getElementById('scrapeButton').style.display = 'block'
         document.getElementById('find-product').style.display = 'block'
         document.getElementById('saveButton').style.display = 'block'
-    } else {
+    } 
+    else {
         // user's trial is not active
-        if (user.paid) {
-          document.getElementById('pay').remove()
-          document.getElementById('userPaid').remove()
+        // document.getElementById('scrapeButton').remove()
+        // document.getElementById('find-product').remove()
+        // document.getElementById('saveButton').remove()
+        // document.getElementById('inputForm').remove()
+        trialEnd = true
       
-          document.getElementById('scrapeButton').style.display = 'block'
-          document.getElementById('find-product').style.display = 'block'
-          document.getElementById('saveButton').style.display = 'block'
-          // document.getElementById('inputForm').style.display = 'none'
-      
-          // for testing purpouse
-          // const subscriptionDiv = document.createElement('div')
-          // document.getElementById('inputForm').appendChild(subscriptionDiv)
-          // const checkSubscriptionBtn = document.createElement('BUTTON')
-          // checkSubscriptionBtn.innerHTML = 'Check your subscription'
-          // checkSubscriptionBtn.id = 'checkSubscription'
-          // checkSubscriptionBtn.style.background = 'green'
-          // subscriptionDiv.appendChild(checkSubscriptionBtn)
-          // checkSubscriptionBtn.addEventListener('click', function(){
-          //   extpay.openPaymentPage()
-          // })
-        } 
-        else {
-          document.getElementById('scrapeButton').remove()
-          document.getElementById('find-product').remove()
-          document.getElementById('saveButton').remove()
-          document.getElementById('inputForm').remove()
-      
-          document.getElementById('userPaid').style.display = 'block'
-          document.getElementById('pay').style.display = 'block'
-        }
+        // document.getElementById('subscriptionHeader').innerHTML = 'Log In'
+        // document.getElementById('subscriptionHeader').style.display = 'block'
+        // document.getElementById('trial').innerHTML = 'Sign In'
+        // document.getElementById('trial').style.display = 'block'
+        // document.getElementById('trial').addEventListener('click', extpay.openLoginPage)
+        // openLoginPage
+        // document.getElementById('trial').remove()      
+        // document.getElementById('subscriptionHeader').innerHTML = 'Are you registered?'
+        // document.getElementById('subscriptionHeader').style.display = 'block'
+        // document.getElementById('pay').style.display = 'block'
     }
+    if (trialEnd){
+      const trialBtn = document.getElementById('trial')
+      trialBtn.innerHTML = 'Trial period experied'
+      trialBtn.setAttribute('disabled', 'true')
+      
+      if (user.paid  && !user.subscriptionCancelAt) {
+        // user paid
+        // remove trial & pay buttons
+        document.getElementById('pay').remove()
+        document.getElementById('trial').remove()
+        // document.getElementById('login').remove()
+        // document.getElementById('subscriptionHeader').remove()          
+        // show extension functions 
+        document.getElementById('scrapeButton').style.display = 'block'
+        document.getElementById('find-product').style.display = 'block'
+        document.getElementById('saveButton').style.display = 'block'  
+  
+        // for testing purpouse
+        const subscriptionDiv = document.createElement('div')
+        document.getElementById('inputForm').appendChild(subscriptionDiv)
+        const checkSubscriptionBtn = document.createElement('BUTTON')
+        checkSubscriptionBtn.innerHTML = 'Check your subscription'
+        checkSubscriptionBtn.id = 'checkSubscription'
+        checkSubscriptionBtn.style.background = 'green'
+        subscriptionDiv.appendChild(checkSubscriptionBtn)
+        checkSubscriptionBtn.addEventListener('click', function(){
+          extpay.openPaymentPage()
+        })
+      } 
+      else if (user.paid && user.subscriptionCancelAt) {
+        console.log("Your subscription will end at the next billing cycle")
+        document.getElementById('subscriptionHeader').innerHTML = 'Your subscription will end at the next billing cycle'
 
+      } 
+      else if (user.subscriptionStatus === 'past_due') {
+        console.log("You need to update your card!");
+        document.getElementById('subscriptionHeader').innerHTML = 'You need to update your card!'
+        extpay.openPaymentPage();
+      } 
+      else if (user.subscriptionStatus === 'canceled') {
+        console.log("We hope you enjoyed your subscription!")
+        document.getElementById('scrapeButton').remove()
+        document.getElementById('find-product').remove()
+        document.getElementById('saveButton').remove()
+        document.getElementById('inputForm').remove()
+        document.getElementById('pay').style.display = 'block'
+        // document.getElementById('login').style.display = 'block'
+    } 
+      else {
+        document.getElementById('scrapeButton').remove()
+        document.getElementById('find-product').remove()
+        document.getElementById('saveButton').remove()
+        document.getElementById('inputForm').remove()
+        // document.getElementById('trial').remove()      
+        // document.getElementById('subscriptionHeader').innerHTML = 'Are you registered?'
+        // document.getElementById('subscriptionHeader').style.display = 'block'
+        document.getElementById('pay').style.display = 'block'
+        // document.getElementById('login').style.display = 'block'
+      }
+    }
 }
 
 function checkComissions(){

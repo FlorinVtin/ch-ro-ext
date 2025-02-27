@@ -69,6 +69,12 @@
         border-radius: 5px;
       }
 
+      .buttons{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+
       button {
         padding: 10px;
         background-color: #cb6254;
@@ -77,6 +83,7 @@
         border-radius: 5px;
         cursor: pointer;
       }
+
       button:hover {
         background-color: #b34d33;
       }
@@ -98,6 +105,13 @@
         /* padding: 11px; */
         background-color: #ff8000fa;
       }
+
+      .button-green{
+        background-color: #248910;
+      }      
+      .button-green:hover{
+        background-color: #2bb80f;
+      }   
 
       .show {
         display: block;
@@ -121,13 +135,21 @@
   
   </head>
   <body>
-      <p id="subscriptionHeader">Sign up for free 7 days trial</p>
-      <button id="trial">Try it out for free</button>
-     
-      <p id="userPaid" class="hidden" style="font-size: 1.4rem;">Are you registered?</p>
-      <button id="pay" class="hidden" style="width: 200px;">Proceed</button>
+    <p id="subscriptionHeader"></p>
+
+    <div class="buttons">
+      <div>
+        <button id="trial" class="button-green"><i class="fa-solid fa-play"></i> Trial 7 days</button>
+      </div>
+      <div>
+        <button id="pay"><i class="fa-solid fa-receipt"></i> Subscribe</button>
+      </div>
+      <!-- <div>
+        <button id="login"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+      </div> -->
       <script src="ExtPay.js"></script>
-  
+    </div>
+      
 
     <!-- Secțiunea pentru rezultate -->
     <div id="headings"></div>
