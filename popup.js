@@ -21,7 +21,6 @@ let initialPrice = undefined
 let listComissions = []
 let nonValueArray = []
 let title = ''
-let trialEnd = false
 
 const extpay = ExtPay('calculator-profit-import-china-romania')
 
@@ -34,11 +33,13 @@ foo()
 async function foo() {
 
   const user = await extpay.getUser();
+  let trialEnd = false
+
   // console.log('Trial period started', user.trialStartedAt)
 
     const sevenDays = 1000*60*60*24*1 // in milliseconds
     const now = new Date();
-    // console.log('Remaining period', (now - user.trialStartedAt) < sevenDays)
+
     if (user.trialStartedAt && (now - user.trialStartedAt) < sevenDays) {
         // user's trial is active
         document.getElementById('pay').remove()
@@ -47,14 +48,15 @@ async function foo() {
         document.getElementById('find-product').style.display = 'block'
         document.getElementById('saveButton').style.display = 'block'
     } 
-    else {
+    else if (!(now - user.trialStartedAt) < sevenDays) {
         // user's trial is not active
         trialEnd = true
     }
-    if (trialEnd){
+
+    if (trialEnd === true){
       const trialBtn = document.getElementById('trial')
       trialBtn.innerHTML = 'Trial period experied'
-      trialBtn.setAttribute('disabled', 'true')
+      // trialBtn.setAttribute('disabled', 'true')
       
       if (user.paid  && !user.subscriptionCancelAt) {
         // user paid
