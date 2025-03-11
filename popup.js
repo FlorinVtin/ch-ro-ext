@@ -37,7 +37,7 @@ async function foo() {
 
   // console.log('Trial period started', user.trialStartedAt)
 
-    const sevenDays = 1000*60*60*24*1 // in milliseconds
+    const sevenDays = 1000*60*60*24*14 // in milliseconds
     const now = new Date();
 
     if (user.trialStartedAt && (now - user.trialStartedAt) < sevenDays) {
@@ -47,15 +47,21 @@ async function foo() {
         document.getElementById('scrapeButton').style.display = 'block'
         document.getElementById('find-product').style.display = 'block'
         document.getElementById('saveButton').style.display = 'block'
+        // subscription details
+        document.getElementById('arrowSubscription').addEventListener('click', showSubscriptionDetails)
+        document.getElementById('checkSubBtn').addEventListener('click', function(){
+          extpay.openPaymentPage()
+        })
+
     } 
-    else if (!(now - user.trialStartedAt) < sevenDays) {
+    else if ((now - user.trialStartedAt) > sevenDays) {
         // user's trial is not active
         trialEnd = true
     }
 
     if (trialEnd === true){
       const trialBtn = document.getElementById('trial')
-      trialBtn.innerHTML = 'Trial period experied'
+      trialBtn.innerHTML = 'Still trial period?'
       // trialBtn.setAttribute('disabled', 'true')
       
       if (user.paid  && !user.subscriptionCancelAt) {
@@ -66,22 +72,20 @@ async function foo() {
         document.getElementById('scrapeButton').style.display = 'block'
         document.getElementById('find-product').style.display = 'block'
         document.getElementById('saveButton').style.display = 'block'  
-  
-        // for testing purpouse
-        const subscriptionDiv = document.createElement('div')
-        document.getElementById('inputForm').appendChild(subscriptionDiv)
-        const checkSubscriptionBtn = document.createElement('BUTTON')
-        checkSubscriptionBtn.innerHTML = 'Check your subscription'
-        checkSubscriptionBtn.id = 'checkSubscription'
-        checkSubscriptionBtn.style.background = 'green'
-        subscriptionDiv.appendChild(checkSubscriptionBtn)
-        checkSubscriptionBtn.addEventListener('click', function(){
+        // subscription details
+        document.getElementById('arrowSubscription').addEventListener('click', showSubscriptionDetails)
+        document.getElementById('checkSubBtn').addEventListener('click', function(){
           extpay.openPaymentPage()
         })
       } 
       else if (user.paid && user.subscriptionCancelAt) {
         // console.log("Your subscription will end at the next billing cycle")
         document.getElementById('subscriptionHeader').innerHTML = 'Your subscription will end at the next billing cycle'
+        // subscription details
+        document.getElementById('arrowSubscription').addEventListener('click', showSubscriptionDetails)
+        document.getElementById('checkSubBtn').addEventListener('click', function(){
+          extpay.openPaymentPage()
+        })
 
       } 
       else if (user.subscriptionStatus === 'past_due') {
@@ -222,6 +226,8 @@ function scrape() {
       // adding the final cost 
       const showFinalCost_aer = document.createElement('p');
       const showFinalCost_tren = document.createElement('p');
+      showFinalCost_aer.id = 'showFinalCost_aer'
+      showFinalCost_tren.id = 'showFinalCost_tren'
       
       // load comissions
       checkComissions()
@@ -542,7 +548,19 @@ function showCalculProfitInput(){
 
 function showComissions(){
   let inputForm = document.getElementById('inputForm');
-  let arrow = document.querySelectorAll('.arrow-comission');
+  let arrow = document.querySelector('.arrow-comission');
+  if (inputForm.style.display === "none" || inputForm.style.display === "") {
+      inputForm.style.display = "block";
+      arrow.style.transform = 'rotate(180deg)'
+  } else {
+      inputForm.style.display = "none";
+      arrow.style.transform = 'rotate(0deg)'
+  }
+}
+
+function showSubscriptionDetails(){
+  let inputForm = document.getElementById('checkSubBtn');
+  let arrow = document.querySelector('.arrow-subscription');
   if (inputForm.style.display === "none" || inputForm.style.display === "") {
       inputForm.style.display = "block";
       arrow.style.transform = 'rotate(180deg)'
