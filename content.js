@@ -24,12 +24,20 @@ function scrapePriceAndPackagingDetails() {
 
     }
 
+    if (priceDiv === null) {
+      priceDiv = document.querySelector('[data-testid="fixed-price"]')
+    }
+
   
     // Scrape pricing details as before
     let priceItems = priceDiv.querySelector('.price');
 
     if (priceItems === null) {
       priceItems = priceDiv.querySelector('span')
+    }
+
+    if (priceItems === null) {
+      priceItems = priceDiv.querySelector('strong')
     }
 
     let priceText = priceItems.innerText.trim().replace('$', '');
