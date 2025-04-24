@@ -28,6 +28,11 @@ function scrapePriceAndPackagingDetails() {
       priceDiv = document.querySelector('[data-testid="fixed-price"]')
     }
 
+    if (priceDiv === null) {
+      priceDiv = document.querySelector('[data-testid="range-price"]')
+    }
+
+
   
     // Scrape pricing details as before
     let priceItems = priceDiv.querySelector('.price');
