@@ -15,17 +15,23 @@ function scrapePriceAndPackagingDetails() {
     // scrapping the principal div element of price's
     let priceDiv = document.querySelector('.price-list')
 
-    if (!priceDiv) {
+    if (priceDiv === null) {
       priceDiv = document.querySelector('.price-range')
+    }
+   
+    if (priceDiv === null) {
+      priceDiv = document.querySelector('.price-item')
+
     }
 
   
     // Scrape pricing details as before
     let priceItems = priceDiv.querySelector('.price');
 
-    if (!priceItems) {
+    if (priceItems === null) {
       priceItems = priceDiv.querySelector('span')
     }
+
     let priceText = priceItems.innerText.trim().replace('$', '');
     if ( priceText ){
       if (priceText.includes('-')){

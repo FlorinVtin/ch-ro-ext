@@ -161,6 +161,7 @@ function scrape() {
   });
   // Sent to background js to run the following script
   chrome.runtime.sendMessage({ action: 'scrapePriceAndPackagingDetails' }, function(response) {
+
       title = response.title
 
       if (chrome.runtime.lastError) {
