@@ -66,15 +66,15 @@ function scrapePriceAndPackagingDetails() {
         const rightText = nextElement.innerText.trim();
   
         // Based on the text in the left div, we can store this information accordingly
-        if (leftElement.innerText.includes('Single package size:')) {
+        if (leftElement.innerText.includes('Single package size')) {
           data.packagingDetails.singlePackageSize = rightText;
-        } else if (leftElement.innerText.includes('gross weight:') || leftElement.innerText.includes('Weight')) {
+        } else if (leftElement.innerText.includes('gross weight') || leftElement.innerText.includes('Weight')) {
           data.packagingDetails.grossWeight = rightText;
-        } else if (leftElement.innerText.includes('Net weight:')) {
+        } else if (leftElement.innerText.includes('Net weight')) {
           data.packagingDetails.netWeight = rightText;
-        } else if (leftElement.innerText.includes('Package type:')) {
+        } else if (leftElement.innerText.includes('Package type')) {
           data.packagingDetails.packageType = rightText;
-        } else if (leftElement.innerText.includes('Delivery time:')) {
+        } else if (leftElement.innerText.includes('Delivery time')) {
           data.packagingDetails.deliveryTime = rightText;
         }
         
