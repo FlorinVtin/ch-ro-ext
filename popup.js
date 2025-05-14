@@ -223,6 +223,14 @@ function scrape() {
       transportCostDiv.append(transport);
 
       firstPrice = response.priceDetails[0]
+      
+      if (firstPrice.includes(',')){
+        firstPrice = firstPrice.replace(',', '.')
+        let lastDot = firstPrice.lastIndexOf('.')
+        firstPrice = firstPrice.substring(0, lastDot)
+      }
+
+
       initialPrice = +firstPrice
  
       const finalCostsDiv = document.createElement('div');
