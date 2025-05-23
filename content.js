@@ -56,54 +56,42 @@ function scrapePriceAndPackagingDetails() {
     }
     data.priceDetails.push(priceText);
   
-    // Scrape the "Packaging and Delivery" information (look for div.left followed by div.right)
-    const leftElements = document.querySelectorAll('div.left');
-    leftElements.forEach(leftElement => {
-      const nextElement = leftElement.nextElementSibling;
-  
-      if (nextElement && nextElement.classList.contains('right')) {
-        // Extract the text from the <div class="right">
-        const rightText = nextElement.innerText.trim();
-  
-        // Based on the text in the left div, we can store this information accordingly
-        if (leftElement.innerText.includes('Single package size')) {
-          data.packagingDetails.singlePackageSize = rightText;
-        } else if (leftElement.innerText.includes('gross weight') || leftElement.innerText.includes('Weight')) {
-          data.packagingDetails.grossWeight = rightText;
-        } else if (leftElement.innerText.includes('Net weight')) {
-          data.packagingDetails.netWeight = rightText;
-        } else if (leftElement.innerText.includes('Package type')) {
-          data.packagingDetails.packageType = rightText;
-        } else if (leftElement.innerText.includes('Delivery time')) {
-          data.packagingDetails.deliveryTime = rightText;
-        }
+    // Single package size
+    const singlePackageSize = document.querySelector('div[title="Single package size"] + div div').textContent.trim();
+
+    // Single gross weight
+    const singleGrossWeight = document.querySelector('div[title="Single gross weight"] + div div').textContent.trim();
+
+    data.packagingDetails.singlePackageSize = singlePackageSize
+    data.packagingDetails.grossWeight = singleGrossWeight
+
         
-        // calculate the volumetric weigth based on single package size
-        if(data.packagingDetails.singlePackageSize){
-            let transportCalc = data.packagingDetails.singlePackageSize;
-            transportCalc = transportCalc.replace(" cm", "");
-            transportCalc = transportCalc.replace(/X/g, "*");
-            // transportCalc += "/5000";
-            transportCalc = transportCalc.split('*')
-            transportCalc = (calculateTransport(transportCalc)/5000).toFixed(3)
+    // calculate the volumetric weigth based on single package size
+    if(data.packagingDetails.singlePackageSize){
+        let transportCalc = data.packagingDetails.singlePackageSize;
+        transportCalc = transportCalc.replace(" cm", "");
+        transportCalc = transportCalc.replace(/X/g, "*");
+        // transportCalc += "/5000";
+        transportCalc = transportCalc.split('*')
+        transportCalc = (calculateTransport(transportCalc)/5000).toFixed(3)
 
-            
-            // console.log('transportCalc', transportCalc)
-            // console.log('type', typeof(transportCalc))
+        // let volumetricSize = (+transportCalc/5000).toFixed(3);
+        data.volumetricCalc = transportCalc;
+    }
 
-            // let volumetricSize = (+transportCalc/5000).toFixed(3);
-            data.volumetricCalc = transportCalc;
-        }
-
-        // calculate the weight based on gross weight
-        if (data.packagingDetails.grossWeight){
-          // let grossWeight = data.packagingDetails.grossWeight;
-          let grossWeight = data.packagingDetails.grossWeight.replace('kg', '');
-          data.grossWeight = grossWeight;
-        }
-
+    // calculate the weight based on gross weight
+    if (data.packagingDetails.grossWeight){
+      // let grossWeight = data.packagingDetails.grossWeight;
+      let grossWeight = data.packagingDetails.grossWeight
+      if (grossWeight.includes('kg')){
+        grossWeight = grossWeight.replace('kg', '').trim()
       }
-    });
+      else if (grossWeight.includes('KG')){
+        grossWeight = grossWeight.replace('KG', '').trim()
+      }
+
+      data.grossWeight = grossWeight;
+    }
     
   
     return data;
