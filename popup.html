@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/mvp.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Import China-Ro</title>
     <style>
       body {
-        width: 300px;
+        width: 350px;
         font-family: Arial, sans-serif;
         padding: 10px;
       }
@@ -37,6 +38,18 @@
         display: none;
         
       }
+
+      #inputPrefferedPrice {
+        margin-top: 20px;
+        width: 200px;
+        display: none;
+      }
+
+      #inputSellPrice {
+        margin-top: 20px;
+        width: 200px;
+        display: none;
+      }
       
       input[type="number"] {
         width: 100%;
@@ -46,16 +59,65 @@
         border: 1px solid #ccc;
         border-radius: 5px;
       }
+
+      #options {
+        width: 150%;
+        padding: 8px;
+        margin-bottom: 5px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .buttons{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+
       button {
         padding: 10px;
-        background-color: #4CAF50;
+        background-color: #cb6254;
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
       }
+
       button:hover {
-        background-color: #45a049;
+        background-color: #b34d33;
+      }
+
+      .button-blue{
+        background-color: #6897BB;
+      }
+
+      .button-blue:hover{
+        /* padding: 13px; */
+        background-color: #088DA5;
+      }
+
+      .button-orange{
+        background-color: #ff8c00;
+      }
+
+      .button-orange:hover{
+        /* padding: 11px; */
+        background-color: #ff8000fa;
+      }
+
+      .button-green{
+        background-color: #248910;
+      }      
+      .button-green:hover{
+        background-color: #2bb80f;
+      }   
+
+      .show {
+        display: block;
+      }
+      .hidden{
+        display: none;
       }
 
       .arrow {
@@ -63,7 +125,7 @@
         transition: transform 0.3s;
       }
 
-      .rotate {
+      .rotate-comission {
         transform: rotate(180deg);
       }
       
@@ -73,22 +135,98 @@
   
   </head>
   <body>
+    <p id="subscriptionHeader"></p>
+
+    <div class="buttons">
+      <div>
+        <button id="trial" class="button-green"><i class="fa-solid fa-play"></i> Demo 7 zile</button>
+      </div>
+      <div>
+        <button id="pay"><i class="fa-solid fa-receipt"></i> Aboneaza-te</button>
+      </div>
+      <!-- <div>
+        <button id="login"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+      </div> -->
+      <script src="ExtPay.js"></script>
+    </div>
+      
+
     <!-- Secțiunea pentru rezultate -->
     <div id="headings"></div>
+    <div id="prefferedPriceDiv" class="hidden">
+      <h4>Pret preferential? <span id="arrowBtnPrice"><i class="fa-solid fa-chevron-down arrow-preffered"></i></span></h4>
+    </div>
 
-    <!-- --------------------------------------- -->
-    <!-- <h3>Scrape Prices, Packaging & Exchange Rates</h3> -->
-    <button id="scrapeButton">Calculeaza pret achizitie China</button>
     <div id="headings"></div>
-    <script src="popup.js" type="module"></script>
 
+    <!-- Form for preffered price -->
+    <div id="inputPrefferedPrice">
+      <label for="userPrice">Pret in $:</label>
+      <input type="number" id="userPrice" step="any" placeholder="Introduceti pret achizitie China in $">
+      <button type="submit" class="button" id="prefPriceBtn">Calculeaza preferential</button>
 
-    <!-- Formular pentru variabilele de tip float -->
+      <p id="newCost_Aer"></p>
+      <p id="newCost_Tren"></p>
+      <!-- <script src="popup.js"></script> -->
+    </div>
+
+    <div id="calculProfit" class="hidden">
+      <h4>Calculeaza profit vanzare <span id="arrowSellBtn"><i class="fa-solid fa-chevron-up arrow-profit"></i></span></h4>
+    </div>
+    <!-- Form for sell price in Romania after importing from China -->
+    <div id="inputSellPrice" class="show">
+      <label for="inputSellPrice">Pret vanzare dupa import in Lei:</label>
+      <input type="number" id="sellPrice" step="any" placeholder="Pret vanzare in Lei">
+      <label for="tvaCheck">Alege tipul firmei:</label>
+      <div id="headings"></div>
+      
+      <select name="companyType" id="options" class="show">
+        <option value="1">Impozit pe profit neplatitor de TVA</option>
+        <option value="2">Impozit pe profit platitor de TVA</option>
+        <option value="3">Microintreprindere (un angajat minim) neplatitor de TVA</option>
+        <option value="4">Microintreprindere (un angajat minim) platitor de TVA</option>
+      </select>
+
+      <div id="headings"></div>
+
+      <p id="profitAer_display" class="hidden"></p>
+      <p id="profitTren_display" class="hidden"></p>
+
+      <div id="headings"></div>
+
+      <p id="procentAer_display" class="hidden"></p>
+      <p id="procentTren_display" class="hidden"></p>
+  
+      <div id="headings"></div>
+
+      <button type="submit" id="profitButton" class="button button-blue">Calculeaza profit</button>
+      <button id="copylink" class="button-blue"><i class="fa-regular fa-copy"></i></button>
+      <button id="title" class="button-blue"><i class="fa-brands fa-tumblr"></i></button>
+      <!-- <script src="popup.js"></script>      -->
+    </div>
     
-    <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow"></i></span></h3>
+    <!-- --------------------------------------- -->
+    <div id="headings"></div>
+
+    <button id="scrapeButton" class="button-orange hidden">Calculeaza pret achizitie China</button>
+    <div id="headings"></div>
+    <!-- <script src="popup.js" type="module"></script> -->
+
+    <button id="find-product" class="hidden"><i class="fa-solid fa-camera"></i> Cauta produs dupa imagine</button>
+    <div id="headings"></div>
+    <!-- <script src="popup.js" type="module"></script> -->
+
+    <div>
+      <!-- Display BNR Exchange Rate -->
+      <iframe style="width: 200px; height: 95px;" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" src="https://www.cursbnr.ro/insert/cursvalutar.php?w=200&b=f7f7f7&bl=dcdcdc&ttc=0a6eab&tc=000000&diff=1&ron=1&cb=1&pics=1"></iframe>
+    </div>
+
+    <!-- Input form for comissions -->
+    
+    <h3>Introduceti comisioanele <span id="arrowBtn"><i class="fa-solid fa-chevron-down arrow-comission"></i></span></h3>
 
 
-    <div id="inputForm">
+    <div id="inputForm" class="hidden">
 
       <label for="var1">Comision agent %:</label>
       <input type="number" id="var1" step="any" placeholder="Numar procentual %" required>
@@ -126,12 +264,21 @@
       <input type="number" id="var11" step="any" placeholder="Numar procentual" required>
       
       
-      <button id="saveButton">Salveaza comisioanele</button>
+      <button id="saveButton" class="hidden">Salveaza comisioanele</button>
+      <br>
       <script src="comission.js" type="module"></script>
-      <script src="toggle.js"></script>
+
+     
 
 
     </div>
+    <div id="checkSubscription">
+      <h3>Abonametul tau <span id="arrowSubscription"><i class="fa-solid fa-chevron-down arrow-subscription"></i></span></h3>
+      <button id="checkSubBtn" class="button-green hidden">Vezi info</button>
+    </div>
+
+    <script src="popup.js"></script>
+
 
   </body>
 </html>
