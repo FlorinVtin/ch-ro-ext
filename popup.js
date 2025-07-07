@@ -34,13 +34,15 @@ async function foo() {
 
   const user = await extpay.getUser();
   let trialEnd = false
+  let daysPeriod = 91
+
 
   // console.log('Trial period started', user.trialStartedAt)
 
-    const sevenDays = 1000*60*60*24*7 // in milliseconds
+    const days = 1000*60*60*24*daysPeriod // in milliseconds
     const now = new Date();
 
-    if (user.trialStartedAt && (now - user.trialStartedAt) < sevenDays) {
+    if (user.trialStartedAt && (now - user.trialStartedAt) < days) {
         // user's trial is active
         document.getElementById('pay').remove()
         document.getElementById('trial').remove()
@@ -54,7 +56,7 @@ async function foo() {
         })
 
     } 
-    else if ((now - user.trialStartedAt) > sevenDays) {
+    else if ((now - user.trialStartedAt) > days) {
         // user's trial is not active
         trialEnd = true
     }
