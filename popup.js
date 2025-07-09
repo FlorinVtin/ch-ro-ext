@@ -823,7 +823,8 @@ function findImage(){
         }
     } else if (window.location.hostname.includes("alibaba.com")) {             
         // Selector pentru Alibaba
-        images = document.querySelectorAll("img.id-h-full.id-w-full.id-object-contain");
+        // images = document.querySelectorAll("img.id-h-full.id-w-full.id-object-contain");
+        images = document.querySelector(".id-inline-block.current-main-image img");
     } else if (window.location.hostname.includes("1688.com")) {
         // Selector pentru 1688
         images = document.querySelectorAll("img.detail-gallery-img");
@@ -836,8 +837,10 @@ function findImage(){
     }
 
     // If we found images, process the first one
-    if (images && images.length > 0) {
-        let imageUrl = images[0].getAttribute("src");
+    // if (images && images.length > 0) {
+    //     let imageUrl = images[0].getAttribute("src");
+    if (images && images.src) {
+      let imageUrl = images.getAttribute("src");
 
         // If the image URL is relative, make it absolute
         if (imageUrl && imageUrl.startsWith("//")) {
