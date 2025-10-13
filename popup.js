@@ -34,7 +34,7 @@ async function foo() {
 
   const user = await extpay.getUser();
   let trialEnd = false
-  let daysPeriod = 91
+  let daysPeriod = 1
 
 
   // console.log('Trial period started', user.trialStartedAt)
@@ -228,8 +228,7 @@ function scrape() {
       
       if (firstPrice.includes(',')){
         firstPrice = firstPrice.replace(',', '.')
-        let lastDot = firstPrice.lastIndexOf('.')
-        firstPrice = firstPrice.substring(0, lastDot)
+        firstPrice = countDots(firstPrice)
       }
 
 
@@ -299,6 +298,24 @@ function scrape() {
       document.getElementById('title').addEventListener('click', copyTitle)
     });
   };
+
+
+  function countDots(str) {
+    // Count occurrences of '.'
+    const periodCount = (str.match(/\./g) || []).length;
+
+    // Check if '.' is present and count > 1
+    if (periodCount > 1) {
+        let lastDot = str.lastIndexOf('.')
+        str = str.substring(0, lastDot)
+    } else {
+        console.log("One or no periods found. Passing...");
+        // Do nothing or minimal handling
+    }
+
+    return str
+  }
+
 
   function roundVolumetricSize(volumNumber){
     return Math.ceil(volumNumber*10)/10
@@ -823,8 +840,19 @@ function findImage(){
         }
     } else if (window.location.hostname.includes("alibaba.com")) {             
         // Selector pentru Alibaba
-        // images = document.querySelectorAll("img.id-h-full.id-w-full.id-object-contain");
-        images = document.querySelector(".id-inline-block.current-main-image img");
+        images = document.querySelectorAll("img.id-h-full.id-w-full.id-object-contain");
+        console.log('First image: ', images)
+
+        if (images.length === 0){
+          let group = document.getElementsByClassName('id-flex id--mt-4 id-flex-col id--mt-5 id-h-full')
+          let elem = group[0].childNodes[1].querySelector('.id-relative').getAttribute("style")
+          const urlMatch = elem.match(/url\(["']?(.*?)["']?\)/);
+          images = urlMatch ? urlMatch[1] : null;
+          images = images.replace('.jpg_80x80', '')
+          console.log('Image: ', images)
+        }
+        // images = document.querySelectorAll(".id-inline-block.current-main-image img").item('currentSrc');
+
     } else if (window.location.hostname.includes("1688.com")) {
         // Selector pentru 1688
         images = document.querySelectorAll("img.detail-gallery-img");
@@ -839,13 +867,18 @@ function findImage(){
     // If we found images, process the first one
     // if (images && images.length > 0) {
     //     let imageUrl = images[0].getAttribute("src");
-    if (images && images.src) {
-      let imageUrl = images.getAttribute("src");
-
+    if (images) {
+      if  (images.src){
+        let imageUrl = images.getAttribute("src");
         // If the image URL is relative, make it absolute
         if (imageUrl && imageUrl.startsWith("//")) {
             imageUrl = "https:" + imageUrl;
         }
+      }
+      else {
+        imageUrl = "https:" + images.replace('.jpg_80x80', '');
+      }
+
 
         // For Amazon, clean the URL (remove any query params)
         if (window.location.hostname.includes("amazon.com")) {

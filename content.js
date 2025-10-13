@@ -60,6 +60,11 @@ function scrapePriceAndPackagingDetails() {
         priceText = priceText.split('\n')[0]
       }
     }
+
+    if (priceText.includes('US')){
+      priceText = priceText.replace('US', '')
+    }
+    
     data.priceDetails.push(priceText);
   
 
